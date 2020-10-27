@@ -10,7 +10,7 @@ using namespace std;
 //class for the MIPS Simulator
 class MIPSSimulator
 {
-    private:
+    private: 
         string Registers[32]; //array to store names of registers
         int32_t RegisterValues[32]; //array to store values of registers
 
@@ -35,6 +35,7 @@ class MIPSSimulator
         void bne();
         void lw();
         void sw();
+        
         // void sub();
         // void mul();
         // void andf();
@@ -42,10 +43,10 @@ class MIPSSimulator
         // void orf();
         // void ori();
         // void nor();
-        void slt();
-        // void slti();
 
-        // void beq();
+        void slt();
+        void slti();
+        void beq();
 
         void j();
         void jal();
@@ -186,13 +187,15 @@ void MIPSSimulator::ExecuteInstruction()
         // case 9:
         //     ori();
         //     break;
-        // case 10:
-        //     slti();
-        //     break;
+        case 10:
+            slti();
+            ProgramCounter++;
+            break;
 
-        // case 13:
-        //     beq();
-        //     break;
+        case 4:
+            beq();
+            ProgramCounter++;
+            break;
 
 
         // case 15:
@@ -233,12 +236,30 @@ void MIPSSimulator::addi()
     RegisterValues[r[1]]=RegisterValues[r[0]]+r[2];
 }
 
+void MIPSSimulator::slti()
+{
+    if (RegisterValues[r[0]]<r[2]){
+        RegisterValues[r[1]]=1;
+    }else{
+        RegisterValues[r[1]]=0;
+    }
+    
+}
 void MIPSSimulator::bne()
 {
     if(RegisterValues[r[0]] != RegisterValues[r[1]]){
-        ProgramCounter += r[2]<<2 ;
-        int temp = r[2] << 2;
-        cout<<"bne jump: "<< temp <<endl;
+        ProgramCounter += r[2];
+        // ProgramCounter += r[2]<<2 ;
+        // int temp = r[2] << 2;
+        // cout<<"bne jump: "<< temp <<endl;
+    }
+}
+
+void MIPSSimulator::beq()
+{
+    if(RegisterValues[r[0]] == RegisterValues[r[1]]){
+        ProgramCounter += r[2];
+        // ProgramCounter += r[2]<<2 ;
     }
 }
 
@@ -256,17 +277,17 @@ void MIPSSimulator::sw()
 // J type
 void MIPSSimulator::j()
 {
-    ProgramCounter = r[0]<<2;
+    ProgramCounter = r[0];
+    // ProgramCounter = r[0]<<2;
 }
 
 void MIPSSimulator::jal()
 {
     RegisterValues[31] = ProgramCounter + 1;
-    // cout << "r0: " << r[0] <<endl;
-    ProgramCounter = r[0] <<2;
-    // cout << "PC aftre Jal: " << ProgramCounter <<endl;
-    // ProgramCounter = ProgramCounter << 2;
-    // cout << "PC aftre leftshift: " << ProgramCounter <<endl;
+
+    ProgramCounter = r[0];
+    // ProgramCounter = r[0] <<2;
+
 }
 
 
@@ -283,7 +304,7 @@ void MIPSSimulator::ParseInstruction()
     Instruction_funct = stoi(current_instruction.substr(26,6).c_str(), nullptr, 2);  
 
     // I-type
-    if(Instruction_op == 8 || Instruction_op == 5 || Instruction_op == 35 || Instruction_op == 43){
+    if(Instruction_op == 8 || Instruction_op == 5 || Instruction_op == 35 || Instruction_op == 43||Instruction_op == 4 ||Instruction_op == 10){
         r[0] = stoi(current_instruction.substr(6,5).c_str(), nullptr, 2);
         r[1] = stoi(current_instruction.substr(11,5).c_str(), nullptr, 2);
         // r[2] = stoi(current_instruction.substr(16,16).c_str(), nullptr, 2);
@@ -325,24 +346,31 @@ void MIPSSimulator::Execute()
     char test = getchar(); //to remove effect of pressing enter key while starting
     cout<<"getchar() in Execute: "<<test <<endl;
     
-    int restr = 0;
-    int print_flag = 0;
+
     while(ProgramCounter<NumberOfInstructions) 
     // while(ProgramCounter<NumberOfInstructions) 
-    {
-        cout<<"PC: "<<ProgramCounter<<endl;
-        if (ProgramCounter%4 == 0){print_flag = 1;restr ++;}
+    {   
+        if(mode == 0){
+            cout<<"PC before: "<<ProgramCounter<<endl;
+        }
+        // if (ProgramCounter%4 == 0){print_flag = 1;restr ++;}
         ReadInstruction(ProgramCounter); //set current_instruction
         ParseInstruction(); // return op , populate values in r[]
         ExecuteInstruction(); //call appropriate operation function based on the op and increment program counter
-        if(print_flag == 1){PrintRegister(); }
         
-        print_flag = 0;
-        cout<<"************ "<<endl;
+        // if(print_flag == 1){PrintRegister(); }
+        if(mode == 0){
+            PrintRegister(); 
+            cout<<"PC after: "<<ProgramCounter<<endl;
+            cout<<"************ "<<endl;
+        }
+        if(mode == 1){
+            PrintRegister(); 
+        }
 
     }
-    cout<<endl<<"Execution completed successfully"<<endl<<endl;
-    cout<<"$v0:"<<RegisterValues[2]<<endl;
+    // cout<<endl<<"Execution completed successfully"<<endl<<endl;
+    // cout<<"$v0:"<<RegisterValues[2]<<endl;
 }
 
 
