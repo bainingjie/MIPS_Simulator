@@ -35,7 +35,7 @@ class MIPSSimulator
         void bne();
         void lw();
         void sw();
-        
+
         // void sub();
         // void mul();
         // void andf();
@@ -350,7 +350,7 @@ void MIPSSimulator::Execute()
     while(ProgramCounter<NumberOfInstructions) 
     // while(ProgramCounter<NumberOfInstructions) 
     {   
-        if(mode == 0){
+        if(Mode == 0){
             cout<<"PC before: "<<ProgramCounter<<endl;
         }
         // if (ProgramCounter%4 == 0){print_flag = 1;restr ++;}
@@ -359,12 +359,12 @@ void MIPSSimulator::Execute()
         ExecuteInstruction(); //call appropriate operation function based on the op and increment program counter
         
         // if(print_flag == 1){PrintRegister(); }
-        if(mode == 0){
+        if(Mode == 0){
             PrintRegister(); 
             cout<<"PC after: "<<ProgramCounter<<endl;
             cout<<"************ "<<endl;
         }
-        if(mode == 1){
+        if(Mode == 1){
             PrintRegister(); 
         }
 
