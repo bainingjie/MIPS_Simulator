@@ -91,7 +91,7 @@ MIPSSimulator::MIPSSimulator(int32_t mode, string fileName)
     {
         Memory[i]=0; 
     }
-    Mode = mode; 
+    Mode = 0; 
     ifstream InputFile;
     InputFile.open(fileName.c_str(),ios::in); 
     if(!InputFile) 
@@ -111,21 +111,20 @@ MIPSSimulator::MIPSSimulator(int32_t mode, string fileName)
 
 void MIPSSimulator::PrintRegister()
 {
-    // for (int i = 0; i <= 31; i++){
-    //     cout<<Registers[i]<<": "<<RegisterValues[i]<<endl;
-    // }
-    cout<<Registers[2]<<": "<<RegisterValues[2]<<endl;
-    cout<<Registers[4]<<": "<<RegisterValues[4]<<endl;
-    cout<<Registers[16]<<": "<<RegisterValues[16]<<endl;
-    cout<<Registers[29]<<": "<<RegisterValues[29]<<endl;
-    cout<<Registers[31]<<": "<<RegisterValues[31]<<endl;
-
-    for (int i = 4070; i<=4096; i++){
-        cout<<"Memory"<<i<<"  :"<<Memory[i]<<endl;
+    for (int i = 0; i <= 31; i++){
+        cout<<Registers[i]<<": "<<RegisterValues[i]<<" | ";
     }
+    // cout<<endl;
+    // cout<<Registers[2]<<": "<<RegisterValues[2]<< " | ";
+    // cout<<Registers[4]<<": "<<RegisterValues[4]<< " | ";
+    // cout<<Registers[16]<<": "<<RegisterValues[16]<< " | ";
+    // cout<<Registers[29]<<": "<<RegisterValues[29]<< " | ";
+    // cout<<Registers[31]<<": "<<RegisterValues[31]<<" | ";
+
+    // for (int i = 4070; i<=4096; i++){
+    //     cout<<"Memory"<<i<<"  :"<<Memory[i]<<endl;
+    // }
 }
-
-
 
 /*set current_instruction*/
 void MIPSSimulator::ReadInstruction(int32_t program_counter)
@@ -136,7 +135,7 @@ void MIPSSimulator::ReadInstruction(int32_t program_counter)
 /*call appropriate operation function based on the op and increment program counter*/
 void MIPSSimulator::ExecuteInstruction()
 {
-    cout<<Instruction_op<<endl;
+    // cout<<Instruction_op<<endl;
     switch(Instruction_op) 
     {
         //R-type
@@ -270,7 +269,7 @@ void MIPSSimulator::lw()
 
 void MIPSSimulator::sw()
 {
-    cout<<"****sw :  "<<(RegisterValues[r[1]]+r[2])<<"   "<< RegisterValues[r[0]]<<endl;
+    cout<<endl<<"sw is executed with value: "<<(RegisterValues[r[1]]+r[2])<<" address:  "<< RegisterValues[r[0]]<<endl;
     Memory[RegisterValues[r[0]]+r[2]] =  RegisterValues[r[1]];
 }
 
@@ -320,7 +319,7 @@ void MIPSSimulator::ParseInstruction()
             r[2] = stoi(temp_imm, nullptr, 2);
             r[2] ++;
             r[2] = 0-r[2];
-            cout<<"r[2]:"<<r[2]<<endl; 
+            // cout<<"r[2]:"<<r[2]<<endl; 
         }else{
             r[2] = stoi(current_instruction.substr(16,16).c_str(), nullptr, 2);
         }
@@ -343,15 +342,15 @@ void MIPSSimulator::ParseInstruction()
 //function to run the simulator
 void MIPSSimulator::Execute()
 {
-    char test = getchar(); //to remove effect of pressing enter key while starting
-    cout<<"getchar() in Execute: "<<test <<endl;
+    getchar(); //to remove effect of pressing enter key while starting
+    // cout<<"getchar() in Execute: "<<test <<endl;
     
-
+    // PrintRegisterName();
     while(ProgramCounter<NumberOfInstructions) 
     // while(ProgramCounter<NumberOfInstructions) 
     {   
         if(Mode == 0){
-            cout<<"PC before: "<<ProgramCounter<<endl;
+            cout<<"PC before: "<<ProgramCounter<<" | ";
         }
         // if (ProgramCounter%4 == 0){print_flag = 1;restr ++;}
         ReadInstruction(ProgramCounter); //set current_instruction
@@ -364,10 +363,9 @@ void MIPSSimulator::Execute()
             cout<<"PC after: "<<ProgramCounter<<endl;
             cout<<"************ "<<endl;
         }
-        if(Mode == 1){
-            PrintRegister(); 
-        }
-
+    }
+    if(Mode == 1){
+        PrintRegister(); 
     }
     // cout<<endl<<"Execution completed successfully"<<endl<<endl;
     // cout<<"$v0:"<<RegisterValues[2]<<endl;
@@ -379,17 +377,16 @@ int main()
     string path;
     int32_t mode;
     cout<<endl<<"MIPS Simulator - team7"<<endl<<endl;
-    cout<<"Two modes are available:"<<endl<<endl<<"1. Step by Step Mode - View state after each instruction"<<endl<<"2. Execution Mode - View state after end of execution"<<endl<<endl;
-    cout<<"Please enter the relative path of the input file and mode "<<endl;
-    cin>>path>>mode;
+    cout<<"Please enter the relative path of the input file, such as  './sample_binary.txt' "<<endl;
+    cin>>path;
 
-    if(mode!=1 && mode!=2) 
-    {
-        cout<<"Error: Invalid Mode"<<endl;
-        return 1;
-    }
+    // if(mode!=1 && mode!=2) 
+    // {
+    //     cout<<"Error: Invalid Mode"<<endl;
+    //     return 1;
+    // }
 
-    MIPSSimulator simulator(mode-1,path); //create and initialize simulator
+    MIPSSimulator simulator(0,path); //create and initialize simulator
     simulator.Execute(); //execute simulator
     return 0;
 }
