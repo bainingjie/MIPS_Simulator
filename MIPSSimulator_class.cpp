@@ -8,6 +8,14 @@
 using namespace std;
 
 //class for the MIPS Simulator
+
+void print_int_as_32bits (int num){
+    for (int i = 31; i>=0; i--){
+        printf("%d",(num>>i) & 1);
+    }
+    // puts("");
+}
+
 class MIPSSimulator
 {
     private: 
@@ -41,7 +49,7 @@ class MIPSSimulator
         // void andf();
         // void andi();
         // void orf();
-        // void ori();
+
         // void nor();
 
         void slt();
@@ -51,6 +59,8 @@ class MIPSSimulator
         void j();
         void jal();
 
+        void lui();
+        void ori();
 
         void ReadInstruction(int32_t line);
         void ParseInstruction();
@@ -113,6 +123,10 @@ void MIPSSimulator::PrintRegister()
 {
     for (int i = 0; i <= 31; i++){
         cout<<Registers[i]<<": "<<RegisterValues[i]<<" | ";
+        /*print as binary*/ 
+        // cout<<Registers[i]<<": ";
+        // print_int_as_32bits(RegisterValues[i]);
+        // cout<<" | ";
     }
     // cout<<endl;
     // cout<<Registers[2]<<": "<<RegisterValues[2]<< " | ";
@@ -196,10 +210,15 @@ void MIPSSimulator::ExecuteInstruction()
             ProgramCounter++;
             break;
 
+        case 13:
+            ori();
+            ProgramCounter++;
+            break;
 
-        // case 15:
-        //     j();
-        //     break;
+        case 15:
+            lui();
+            ProgramCounter++;
+            break;
         // case 16:
         //     halt();
         //     break;
@@ -233,6 +252,21 @@ void MIPSSimulator::slt()
 void MIPSSimulator::addi()
 {
     RegisterValues[r[1]]=RegisterValues[r[0]]+r[2];
+}
+
+
+void MIPSSimulator::lui()
+{
+    RegisterValues[r[1]]= (RegisterValues[r[1]]<<16) >>16;
+    RegisterValues[r[1]] = RegisterValues[r[1]] | (r[2]<<16);
+}
+
+
+// R[$rt] ← R[$rs] | {0 × 16, imm}
+void MIPSSimulator::ori()
+{
+    int temp_imm =  r[2] & 0b1111111111111111;
+    RegisterValues[r[1]]=RegisterValues[r[0]] | temp_imm;
 }
 
 void MIPSSimulator::slti()
@@ -303,7 +337,7 @@ void MIPSSimulator::ParseInstruction()
     Instruction_funct = stoi(current_instruction.substr(26,6).c_str(), nullptr, 2);  
 
     // I-type
-    if(Instruction_op == 8 || Instruction_op == 5 || Instruction_op == 35 || Instruction_op == 43||Instruction_op == 4 ||Instruction_op == 10){
+    if(Instruction_op == 8 || Instruction_op == 5 || Instruction_op == 35 || Instruction_op == 43||Instruction_op == 4 ||Instruction_op == 10 ||Instruction_op == 15 ||Instruction_op == 13){
         r[0] = stoi(current_instruction.substr(6,5).c_str(), nullptr, 2);
         r[1] = stoi(current_instruction.substr(11,5).c_str(), nullptr, 2);
         // r[2] = stoi(current_instruction.substr(16,16).c_str(), nullptr, 2);
@@ -372,14 +406,15 @@ void MIPSSimulator::Execute()
 }
 
 
+
+
 int main()
 {
     string path;
-    int32_t mode;
+    // int32_t mode;
     cout<<endl<<"MIPS Simulator - team7"<<endl<<endl;
     cout<<"Please enter the relative path of the input file, such as  './sample_binary.txt' "<<endl;
     cin>>path;
-
     // if(mode!=1 && mode!=2) 
     // {
     //     cout<<"Error: Invalid Mode"<<endl;
@@ -388,5 +423,7 @@ int main()
 
     MIPSSimulator simulator(0,path); //create and initialize simulator
     simulator.Execute(); //execute simulator
+    int test = 3;
+    print_int_as_32bits(test);
     return 0;
 }
