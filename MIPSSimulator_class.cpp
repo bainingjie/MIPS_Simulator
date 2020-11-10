@@ -20,8 +20,8 @@ class MIPSSimulator
 {
     private: 
         string Registers[32]; //array to store names of registers
-        int32_t RegisterValues[32]; //array to store values of registers
-
+        int32_t RegisterValues[32]; //array to store values of CPU registers
+        float FPURegisterValues[32];//array to store values of FPU registers
         int32_t Memory[1024*100];// memory
 
         int32_t Mode; //to store the Mode of execution
@@ -31,7 +31,7 @@ class MIPSSimulator
         int32_t NumberOfInstructions; //to store the number of lines in the program
         string current_instruction; 
         int32_t ProgramCounter; 
-        int32_t r[3]; //to store the id of operand or constant
+        int32_t r[4]; //to store the id of operand or constant
 
 
         int32_t Instruction_op; 
@@ -44,7 +44,8 @@ class MIPSSimulator
         void lw();
         void sw();
 
-        // void sub();
+        void sub();
+        void sll();
         // void mul();
         // void andf();
         // void andi();
@@ -61,6 +62,14 @@ class MIPSSimulator
 
         void lui();
         void ori();
+
+
+        void fadd();
+        void fsub();
+        void fmul();
+        void fdiv();
+        void fsqrt();
+        void fless();
 
         void ReadInstruction(int32_t line);
         void ParseInstruction();
@@ -96,6 +105,7 @@ MIPSSimulator::MIPSSimulator(int32_t mode, string fileName)
     for(int32_t i=0;i<32;i++)
     {
         RegisterValues[i]=0; 
+        FPURegisterValues[i] = 0.0;
     }
     for(int32_t i=0;i<1024*4;i++)
     {
@@ -135,9 +145,9 @@ void MIPSSimulator::PrintRegister()
     // cout<<Registers[29]<<": "<<RegisterValues[29]<< " | ";
     // cout<<Registers[31]<<": "<<RegisterValues[31]<<" | ";
 
-    // for (int i = 4070; i<=4096; i++){
-    //     cout<<"Memory"<<i<<"  :"<<Memory[i]<<endl;
-    // }
+    for (int i = 4070; i<=4096; i++){
+        cout<<"Memory"<<i<<"  :"<<Memory[i]<<endl;
+    }
 }
 
 /*set current_instruction*/
@@ -157,12 +167,18 @@ void MIPSSimulator::ExecuteInstruction()
             if(Instruction_funct == 32){
                 add();
                 ProgramCounter++;
+            }else if (Instruction_funct == 34){
+                sub();
             }else if (Instruction_funct == 8){
                 jr();
             }else if (Instruction_funct == 42){
                 slt();
                 ProgramCounter++;
+            }else if(Instruction_funct == 0){
+                sll();
+                ProgramCounter++;
             }else{
+                puts("R-type instruction not found");
                 ProgramCounter++;
             }
             break;
@@ -219,11 +235,30 @@ void MIPSSimulator::ExecuteInstruction()
             lui();
             ProgramCounter++;
             break;
-        // case 16:
-        //     halt();
-        //     break;
+        case 17:
+            if (r[3]==16){
+                if(Instruction_funct == 0){
+                    fadd();
+                }else if(Instruction_funct == 1){
+                    fsub();
+                }else if(Instruction_funct == 2){
+                    fmul();
+                }else if(Instruction_funct == 3){
+                    fdiv();
+                }else if(Instruction_funct == 4){
+                    fsqrt();
+                }else if(Instruction_funct == 62){
+                    fless();
+                }
+            }
+            else{
+                puts("fpu instruction not found");
+            }
+            ProgramCounter++;
+            break;
         // case -2: //if instruction containing label, ignore
         //     break;
+
         default:
             cout<<"Error: Invalid instruction_op received"<<endl;
             // ReportError();
@@ -234,6 +269,10 @@ void MIPSSimulator::ExecuteInstruction()
 void MIPSSimulator::add()
 {
     RegisterValues[r[2]]=RegisterValues[r[0]]+RegisterValues[r[1]];
+}
+void MIPSSimulator::sub()
+{
+    RegisterValues[r[2]]=RegisterValues[r[0]]-RegisterValues[r[1]];
 }
 void MIPSSimulator::jr()
 {
@@ -248,6 +287,9 @@ void MIPSSimulator::slt()
         RegisterValues[r[2]] = 0;
     }
 }
+void MIPSSimulator::sll(){
+    RegisterValues[r[2]]=RegisterValues[r[1]]<<r[3];
+}
 // I-type : opcode   rs  rt  IMM
 void MIPSSimulator::addi()
 {
@@ -257,7 +299,7 @@ void MIPSSimulator::addi()
 
 void MIPSSimulator::lui()
 {
-    RegisterValues[r[1]]= (RegisterValues[r[1]]<<16) >>16;
+    RegisterValues[r[1]]= (RegisterValues[r[1]]>>16) <<16;
     RegisterValues[r[1]] = RegisterValues[r[1]] | (r[2]<<16);
 }
 
@@ -299,6 +341,7 @@ void MIPSSimulator::beq()
 void MIPSSimulator::lw()
 {
     RegisterValues[r[1]]= Memory[r[2]+RegisterValues[r[0]]];
+    cout<<endl<<"lw is executed with value: "<< (Memory[r[2]+RegisterValues[r[0]]]) <<" address:  "<<RegisterValues[r[1]]<<endl;
 }
 
 void MIPSSimulator::sw()
@@ -312,17 +355,37 @@ void MIPSSimulator::j()
 {
     ProgramCounter = r[0];
     // ProgramCounter = r[0]<<2;
+    cout<<"j is called"<<endl;
 }
 
 void MIPSSimulator::jal()
 {
     RegisterValues[31] = ProgramCounter + 1;
-
     ProgramCounter = r[0];
+    cout<<"jal is called"<<endl;
     // ProgramCounter = r[0] <<2;
 
 }
 
+/* FPU */
+void MIPSSimulator::fadd(){
+    FPURegisterValues[r[2]] =  FPURegisterValues[r[0]] + FPURegisterValues[r[1]];
+}
+void MIPSSimulator::fsub(){
+    FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] - FPURegisterValues[r[0]]; 
+}
+void MIPSSimulator::fmul(){
+    FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] * FPURegisterValues[r[0]];  
+}
+void MIPSSimulator::fdiv(){
+    FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] / FPURegisterValues[r[0]];
+}
+void MIPSSimulator::fsqrt(){
+    FPURegisterValues[r[2]] =  sqrt(FPURegisterValues[r[1]]);
+}
+
+void MIPSSimulator::fless(){
+}
 
 // return op , populate values in r[]
 void MIPSSimulator::ParseInstruction()
@@ -363,10 +426,20 @@ void MIPSSimulator::ParseInstruction()
         r[0] = stoi(current_instruction.substr(6,5).c_str(), nullptr, 2);
         r[1] = stoi(current_instruction.substr(11,5).c_str(), nullptr, 2);
         r[2] = stoi(current_instruction.substr(16,5).c_str(), nullptr, 2);
+         /* store shamt*/ 
+        r[3] = stoi(current_instruction.substr(21,5).c_str(), nullptr, 2);
     // J-type
     }else if (Instruction_op == 2 ||Instruction_op == 3){
         r[0] = stoi(current_instruction.substr(6,26).c_str(), nullptr, 2);
         // cout<<"r[0]: "<<r[0]<<endl;
+    // FPU(f=s)
+    }else if (Instruction_op == 17){
+        r[0] = stoi(current_instruction.substr(11,5).c_str(), nullptr, 2);
+        r[1] = stoi(current_instruction.substr(16,5).c_str(), nullptr, 2);
+        r[2] = stoi(current_instruction.substr(21,5).c_str(), nullptr, 2);
+        /* store the second filed*/ 
+        r[3] = stoi(current_instruction.substr(6,5).c_str(), nullptr, 2);
+
     }else{
         cout<<"Error: Invalid Instruction_op"<<endl;
         // ReportError();   
@@ -384,7 +457,7 @@ void MIPSSimulator::Execute()
     // while(ProgramCounter<NumberOfInstructions) 
     {   
         if(Mode == 0){
-            cout<<"PC before: "<<ProgramCounter<<" | ";
+            cout<<"PC before execution: "<<ProgramCounter<<" | ";
         }
         // if (ProgramCounter%4 == 0){print_flag = 1;restr ++;}
         ReadInstruction(ProgramCounter); //set current_instruction
@@ -394,7 +467,7 @@ void MIPSSimulator::Execute()
         // if(print_flag == 1){PrintRegister(); }
         if(Mode == 0){
             PrintRegister(); 
-            cout<<"PC after: "<<ProgramCounter<<endl;
+            cout<<"PC after　execution: "<<ProgramCounter<<endl;
             cout<<"************ "<<endl;
         }
     }
