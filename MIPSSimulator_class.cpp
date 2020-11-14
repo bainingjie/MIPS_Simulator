@@ -71,6 +71,8 @@ class MIPSSimulator
         void fsqrt();
         void fless();
 
+        void mtc1();
+
         void ReadInstruction(int32_t line);
         void ParseInstruction();
         // void ReportError();
@@ -169,6 +171,7 @@ void MIPSSimulator::ExecuteInstruction()
                 ProgramCounter++;
             }else if (Instruction_funct == 34){
                 sub();
+                ProgramCounter++;
             }else if (Instruction_funct == 8){
                 jr();
             }else if (Instruction_funct == 42){
@@ -250,8 +253,9 @@ void MIPSSimulator::ExecuteInstruction()
                 }else if(Instruction_funct == 62){
                     fless();
                 }
-            }
-            else{
+            }else if (r[3]==4){
+                mtc1();
+            }else{
                 puts("fpu instruction not found");
             }
             ProgramCounter++;
@@ -385,6 +389,56 @@ void MIPSSimulator::fsqrt(){
 }
 
 void MIPSSimulator::fless(){
+}
+
+
+
+
+float int_binary_to_float(int32_t org){
+    /* convert int to 2's comp binary, which is stored in binary_a */ 
+    int32_t a = abs(org);
+    int binary_a[32];
+    for (int i = 31; i>=0; i--){
+        binary_a[i]=a%2;
+        a = a/2;
+    }
+
+    if (org<0){
+        for (int i = 0; i<=31; i++){
+            binary_a[i]=1-binary_a[i];
+        } 
+        for (int i = 31; i>=0; i--){
+            if(binary_a[i]==0){
+                binary_a[i]=1;
+                break;
+            }else{
+                binary_a[i]=0;
+            }
+        }
+    } 
+    /* to float*/ 
+    /*1 + 8 + 23*/ 
+    float result = 1.0;
+    int exp = -127;
+        /*calculate fraction*/
+    for(int i = 31; i>= 9; i--){
+        result += pow(2,(8-i))*binary_a[i];
+    }
+        /*calculate exp*/
+    for(int i = 8; i>=1; i--){  
+        exp += pow(2,(8-i))*binary_a[i];
+    }
+    result = result * pow(2,exp);
+    /*calculate sign*/
+    if (binary_a[0]==1){
+        result = -result;
+    }
+    return result;
+
+}
+
+void MIPSSimulator::mtc1(){
+    FPURegisterValues[r[1]]= int_binary_to_float(RegisterValues[r[0]]);
 }
 
 // return op , populate values in r[]
