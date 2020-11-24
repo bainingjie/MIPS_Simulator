@@ -162,9 +162,9 @@ void MIPSSimulator::PrintRegister()
     // cout<<Registers[29]<<": "<<RegisterValues[29]<< " | ";
     // cout<<Registers[31]<<": "<<RegisterValues[31]<<" | ";
 
-    for (int i = 4070; i<=4096; i++){
-        cout<<"Memory"<<i<<"  :"<<Memory[i]<<endl;
-    }
+    // for (int i = 4070; i<=4096; i++){
+    //     cout<<"Memory"<<i<<"  :"<<Memory[i]<<endl;
+    // }
 }
 
 /*set current_instruction*/
@@ -218,12 +218,7 @@ void MIPSSimulator::ExecuteInstruction()
             addi();
             ProgramCounter++;
             break;
-        case 49:
-            lwc1();
-            ProgramCounter++;
-        case 57:
-            swc1();
-            ProgramCounter++;
+
         //J type
         case 2: 
             j();
@@ -240,10 +235,7 @@ void MIPSSimulator::ExecuteInstruction()
         // case 9:
         //     ori();
         //     break;
-        case 10:
-            slti();
-            ProgramCounter++;
-            break;
+
 
         case 4:
             beq();
@@ -285,6 +277,16 @@ void MIPSSimulator::ExecuteInstruction()
             break;
         // case -2: //if instruction containing label, ignore
         //     break;
+        case 49:
+            lwc1();
+            ProgramCounter++;
+            break;
+        case 57:
+            swc1();
+            ProgramCounter++;
+            cout<<"before break"<<endl;
+            break;
+            cout<<"after break"<<endl;
 
         default:
             cout<<"Error: Invalid instruction_op received"<<endl;
@@ -304,6 +306,7 @@ void MIPSSimulator::sub()
 void MIPSSimulator::jr()
 {
     ProgramCounter = RegisterValues[r[0]];
+    cout<<"jr is called"<<endl;
 }
 
 void MIPSSimulator::slt()
@@ -326,7 +329,7 @@ void MIPSSimulator::addi()
 
 void MIPSSimulator::lui()
 {
-    RegisterValues[r[1]]= (RegisterValues[r[1]]>>16) <<16;
+    RegisterValues[r[1]]= 0;
     RegisterValues[r[1]] = RegisterValues[r[1]] | (r[2]<<16);
     cout<<"lui is executed"<<endl;
 }
@@ -428,6 +431,7 @@ void MIPSSimulator::ceqs(){
     }else{
         RegisterValues[r[2]]=0;
     }
+    cout<<"ceqs is executed"<<endl;
 }
 
 
@@ -481,16 +485,20 @@ void MIPSSimulator::mtc1(){
 }
 
 void MIPSSimulator::lwc1(){
-    FPURegisterValues[r[1]]= int_to_binary_to_float(Memory[r[2]+RegisterValues[r[0]]]);
-    cout<<endl<<"lwc1 is executed with value: "<< FPURegisterValues[r[1]] <<"from address:  "<<RegisterValues[r[1]]<<endl;
+    // FPURegisterValues[r[1]]= int_to_binary_to_float(Memory[r[2]+RegisterValues[r[0]]]);
+    
+    myfloat var;
+    var.i = Memory[r[2]+RegisterValues[r[0]]];
+    FPURegisterValues[r[1]] = var.f;
+
+    cout<<"lwc1 is executed with value: "<< FPURegisterValues[r[1]] <<"from address:  "<<r[2]+RegisterValues[r[0]]<<endl;
 }
 
 void MIPSSimulator::swc1(){
     myfloat var;
     var.f = FPURegisterValues[r[1]];
-
-    cout<<endl<<"swc1 is executed with value: "<<FPURegisterValues[r[1]]<<" address:  "<< RegisterValues[r[0]]+r[2]<<endl;
     Memory[RegisterValues[r[0]]+r[2]] = var.i ;
+    cout<<"swc1 is executed with value: "<<FPURegisterValues[r[1]]<<" address:  "<< RegisterValues[r[0]]+r[2]<<endl;
 }
 
 // return op , populate values in r[]
@@ -504,9 +512,10 @@ void MIPSSimulator::ParseInstruction()
 
     Instruction_op = stoi(current_instruction.substr(0,6).c_str(), nullptr, 2);  
     Instruction_funct = stoi(current_instruction.substr(26,6).c_str(), nullptr, 2);  
-
+    cout<<"instruction_op : "<<Instruction_op<<endl;
+    puts("parse instruction");
     // I-type
-    if(Instruction_op == 8 || Instruction_op == 5 || Instruction_op == 35 || Instruction_op == 43||Instruction_op == 4 ||Instruction_op == 10 ||Instruction_op == 15 ||Instruction_op == 13||Instruction_op == 49){
+    if(Instruction_op == 8 || Instruction_op == 5 || Instruction_op == 35 || Instruction_op == 43||Instruction_op == 4 ||Instruction_op == 10 ||Instruction_op == 15 ||Instruction_op == 13||Instruction_op == 49 || Instruction_op == 57){
         r[0] = stoi(current_instruction.substr(6,5).c_str(), nullptr, 2);
         r[1] = stoi(current_instruction.substr(11,5).c_str(), nullptr, 2);
         // r[2] = stoi(current_instruction.substr(16,16).c_str(), nullptr, 2);
@@ -551,6 +560,8 @@ void MIPSSimulator::ParseInstruction()
         r[3] = stoi(current_instruction.substr(21,5).c_str(), nullptr, 2);
 
     }else{
+        cout<<"current_instruction:"<<current_instruction<<endl;
+        cout<<"opcode: "<<  Instruction_op <<endl;
         cout<<"Error: Invalid Instruction_op"<<endl;
         // ReportError();   
     }
@@ -571,6 +582,7 @@ void MIPSSimulator::Execute()
         }
         // if (ProgramCounter%4 == 0){print_flag = 1;restr ++;}
         ReadInstruction(ProgramCounter); //set current_instruction
+        cout<<"before pares in exe"<<endl;
         ParseInstruction(); // return op , populate values in r[]
         ExecuteInstruction(); //call appropriate operation function based on the op and increment program counter
         
