@@ -7,8 +7,6 @@
 
 using namespace std;
 
-//class for the MIPS Simulator
-
 void print_int_as_32bits (int num){
     for (int i = 31; i>=0; i--){
         printf("%d",(num>>i) & 1);
@@ -27,6 +25,7 @@ class MIPSSimulator
         int32_t RegisterValues[32]; //array to store values of CPU registers
         float FPURegisterValues[32];//array to store values of FPU registers
         int32_t Memory[1024*100];// memory
+        int max_memory_index;
         int32_t limit_of_exec;
         int32_t Mode; //to store the Mode of execution
         int Instruction_count [33];
@@ -93,10 +92,11 @@ class MIPSSimulator
 
         void ReadInstruction(int32_t line);
         void ParseInstruction();
-        // void ReportError();
+
         void ExecuteInstruction();
         void PrintRegister();
         void PrintInstruction();
+        void update_biggest(int a);
 
     public:
         MIPSSimulator(int32_t mode, string fileName, int32_t num_input);
@@ -141,7 +141,7 @@ MIPSSimulator::MIPSSimulator(int32_t mode, string fileName, int32_t num_input)
         RegisterValues[i]=0; 
         FPURegisterValues[i] = 0.0;
     }
-    // RegisterValues[4]= 3;
+
     for(int32_t i=0;i<1024*4;i++)
     {
         Memory[i]=0; 
@@ -175,12 +175,6 @@ void MIPSSimulator::PrintRegister()
         if(RegisterValues[i] != 0){
             print_register<<Registers[i]<<": "<<RegisterValues[i]<<" | ";
         }
-        
-        
-        /*print as binary*/ 
-        // print_register<<Registers[i]<<": ";
-        // print_int_as_32bits(RegisterValues[i]);
-        // print_register<<" | ";
     }
     for (int i = 0; i <= 31; i++){
         if (FPURegisterValues[i] != 0.0){
@@ -202,10 +196,11 @@ void MIPSSimulator::PrintRegister()
 }
 
 void MIPSSimulator::PrintInstruction(){
-    print_instruction.open ("print_instrcution_count.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+    print_instruction.open ("print_instrcution&memory_analysis.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
     for (int i = 0; i <= 32; i++){
             print_instruction<<Instructions[i]<<": "<<Instruction_count[i]<<endl;
     }
+    print_instruction<<"maximum index of memory being used:"<< max_memory_index <<endl;
     print_instruction.close();
 }
 
@@ -218,7 +213,6 @@ void MIPSSimulator::ReadInstruction(int32_t program_counter)
 /*call appropriate operation function based on the op and increment program counter*/
 void MIPSSimulator::ExecuteInstruction()
 {
-    // print_register<<Instruction_op<<endl;
     switch(Instruction_op) 
     {
         //R-type
@@ -255,7 +249,6 @@ void MIPSSimulator::ExecuteInstruction()
         //J type
         case 2: 
             j();
-            // ProgramCounter++;
             Instruction_count[6]++;
             break;
         case 3: 
@@ -353,9 +346,6 @@ void MIPSSimulator::ExecuteInstruction()
             ProgramCounter++;
             Instruction_count[26]++;
             break;
-
-        // case -2: //if instruction containing label, ignore
-        //     break;
         case 49:
             lwc1();
             ProgramCounter++;
@@ -388,7 +378,12 @@ void MIPSSimulator::ExecuteInstruction()
             break;
         default:
             print_register<<"Error: Invalid instruction_op received"<<endl;
-            // ReportError();
+    }
+}
+
+void MIPSSimulator::update_biggest(int a){
+    if(a> max_memory_index){
+        max_memory_index = a;
     }
 }
 
@@ -461,7 +456,6 @@ void MIPSSimulator::lui()
     }
 }
 
-// R[$rt] ← R[$rs] | {0 × 16, imm}
 void MIPSSimulator::ori()
 {
     int temp_imm =  r[2] & 0b1111111111111111;
@@ -499,7 +493,6 @@ void MIPSSimulator::beq()
 {
     if(RegisterValues[r[0]] == RegisterValues[r[1]]){
         ProgramCounter += r[2];
-        // ProgramCounter += r[2]<<2 ;
     }
     
     if(Mode == 0){
@@ -513,6 +506,7 @@ void MIPSSimulator::lw()
     if(Mode == 0){
         print_register<<endl<<"lw is executed with value: "<< (Memory[r[2]+RegisterValues[r[0]]]) <<" address:  "<<RegisterValues[r[1]]<<endl;
     }
+    update_biggest(r[2]+RegisterValues[r[0]]);
 }
 
 
@@ -522,6 +516,7 @@ void MIPSSimulator::sw()
     if(Mode == 0){
         print_register<<endl<<"sw is executed with value: "<<RegisterValues[r[1]]<<" address:  "<< RegisterValues[r[0]]+r[2]<<endl;
     }
+    update_biggest(r[2]+RegisterValues[r[0]]);
     
 }
 
@@ -529,7 +524,6 @@ void MIPSSimulator::sw()
 void MIPSSimulator::j()
 {
     ProgramCounter = r[0];
-    // ProgramCounter = r[0]<<2;
     if(Mode == 0){
         print_register<<"j is called"<<endl;
     }
@@ -542,7 +536,6 @@ void MIPSSimulator::jal()
     if(Mode == 0){
         print_register<<"jal is called"<<endl;
     }
-    // ProgramCounter = r[0] <<2;
 
 }
 
@@ -597,9 +590,7 @@ void MIPSSimulator::itof(){
 }
 
 void MIPSSimulator::ftoi(){
-    // a= -3
     int temp_a = (int)FPURegisterValues[r[1]];
-    // b = - 0.5
     int temp_b =  abs(FPURegisterValues[r[1]]-temp_a);
     if(temp_b >= 0.5){
         if(temp_a>0){temp_a += 1;}else{
@@ -695,6 +686,7 @@ void MIPSSimulator::lwc1(){
     if(Mode == 0){
         print_register<<"lwc1 is executed with value: "<< FPURegisterValues[r[1]] <<"from address:  "<<r[2]+RegisterValues[r[0]]<<endl;
     }
+    update_biggest(r[2]+RegisterValues[r[0]]);
 }
 
 void MIPSSimulator::swc1(){
@@ -704,6 +696,7 @@ void MIPSSimulator::swc1(){
     if(Mode == 0){
         print_register<<"swc1 is executed with value: "<<FPURegisterValues[r[1]]<<" address:  "<< RegisterValues[r[0]]+r[2]<<endl;
     }
+    update_biggest(r[2]+RegisterValues[r[0]]);
 }
 
 void MIPSSimulator::outi(){
@@ -745,7 +738,6 @@ void MIPSSimulator::ParseInstruction(){
     if(current_instruction.size()!=32) 
     {
         print_register<<"Parse Error: Invalid instruction"<<endl;
-        // ReportError();
     }
 
     Instruction_op = stoi(current_instruction.substr(0,6).c_str(), nullptr, 2);  
@@ -754,8 +746,6 @@ void MIPSSimulator::ParseInstruction(){
     if(Instruction_op == 8 || Instruction_op == 5 || Instruction_op == 35 || Instruction_op == 43||Instruction_op == 4 ||Instruction_op == 10 ||Instruction_op == 15 ||Instruction_op == 13||Instruction_op == 49 || Instruction_op == 57){
         r[0] = stoi(current_instruction.substr(6,5).c_str(), nullptr, 2);
         r[1] = stoi(current_instruction.substr(11,5).c_str(), nullptr, 2);
-        // r[2] = stoi(current_instruction.substr(16,16).c_str(), nullptr, 2);
-
 
         if(current_instruction[16] == '1'){
             char temp_imm[17];
@@ -767,7 +757,6 @@ void MIPSSimulator::ParseInstruction(){
             r[2] = stoi(temp_imm, nullptr, 2);
             r[2] ++;
             r[2] = 0-r[2];
-            // print_register<<"r[2]:"<<r[2]<<endl; 
         }else{
             r[2] = stoi(current_instruction.substr(16,16).c_str(), nullptr, 2);
         }
@@ -782,7 +771,6 @@ void MIPSSimulator::ParseInstruction(){
     // J-type
     }else if (Instruction_op == 2 ||Instruction_op == 3){
         r[0] = stoi(current_instruction.substr(6,26).c_str(), nullptr, 2);
-        // print_register<<"r[0]: "<<r[0]<<endl;
     // FPU(f=s)
     }else if (Instruction_op == 17){
         // save fs to r[1]
