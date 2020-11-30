@@ -1,49 +1,13 @@
 ＃使い方：
+g++ -Wall MIPSSimulator_class.cpp
+./a.out
 
-入力例：
-./binary_file.txt 1
+＃出力ファイル：
+print_output.txt             --- outi(print_int)/outc(print_char)の出力結果を保存
+print_pc.txt                 --- PCの値を記録（ただし、mode=0　の時は記録しない）
+print_register.txt           --- Registerの値、実行された命令を記録
+print_instruction_count.txt  --- 命令ごとの実行された回数を記録
 
-
-
-
-
-#メモ
-J:   
-   jal 3
-   j 2
-
-R:
-   jr 8
-   add 32
-   slt 42
-
-I:
-   addi 8
-   lw 35
-   sw 43
-   bne 5
-   slti 10
-   beq 4
-   lui 15
-   ori 13
-
-
-
-?? c.le.s cc flag?
-
-j-instruction上4bitを考えてない
-
-regval[r[0]] or r[0]
-addi 2's complement
-
-lui : 既存の関数がないからprint as binaryは自分で実装しないといけない
-
-
-
-# memory
-　# 最後だけ
-　＃命令実行数を指定
-# make
 
 
 
