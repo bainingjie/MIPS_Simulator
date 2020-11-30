@@ -1,10 +1,10 @@
-#使い方：
+#使い方
 ```
-g++ -Wall MIPSSimulator_class.cpp<br>
-./a.out<br>
+g++ -Wall MIPSSimulator_class.cpp
+./a.out
 ```
 
-#出力ファイル：
+#出力ファイル
 ```
 print_output.txt                       --- outi(print_int)/outc(print_char)の出力結果を保存
 print_pc.txt                           --- PCの値を記録（ただし、mode=0　の時は記録しない）
