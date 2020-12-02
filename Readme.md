@@ -1,7 +1,8 @@
 #使い方
 ```
-g++ -Wall MIPSSimulator_class.cpp
-./a.out
+make
+./simulator_7 
+make clean
 ```
 
 #出力ファイル

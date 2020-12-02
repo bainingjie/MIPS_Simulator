@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include "fpu_imitate.h"
 
 using namespace std;
 
@@ -554,72 +555,80 @@ void MIPSSimulator::fsub(){
     }
 }
 void MIPSSimulator::fmul(){
-    FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] * FPURegisterValues[r[0]];  
+    // FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] * FPURegisterValues[r[0]];  
+    FPURegisterValues[r[2]] = myfmul(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
     if(Mode == 0){
         print_register<<"fmul is executed"<<endl;
     }
 }
 void MIPSSimulator::fdiv(){
-    FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] / FPURegisterValues[r[0]];
+    // FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] / FPURegisterValues[r[0]];
+    FPURegisterValues[r[2]] = myfdiv(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
     if(Mode == 0){
         print_register<<"fdiv is executed"<<endl;
     }
 }
 void MIPSSimulator::fsqrt(){
-    FPURegisterValues[r[2]] =  sqrt(FPURegisterValues[r[1]]);
+    // FPURegisterValues[r[2]] =  sqrt(FPURegisterValues[r[1]]);
+    FPURegisterValues[r[2]] = myfsqrt(FPURegisterValues[r[1]]);
     if(Mode == 0){
         print_register<<"fsqrt is executed"<<endl;
     }
 }
 
 void MIPSSimulator::fless(){
-    if(FPURegisterValues[r[1]]<FPURegisterValues[r[0]]){
-        RegisterValues[r[2]]=1;
-    }else{
-        RegisterValues[r[2]]=0;
-    }
+    // if(FPURegisterValues[r[1]]<FPURegisterValues[r[0]]){
+    //     RegisterValues[r[2]]=1;
+    // }else{
+    //     RegisterValues[r[2]]=0;
+    // }
+    RegisterValues[r[2]] = myfless(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
     if(Mode == 0){
         print_register<<"fless is executed with: if " <<FPURegisterValues[r[1]]<<"< "<< FPURegisterValues[r[0]] <<endl;
     }
 }
 
 void MIPSSimulator::itof(){
-    FPURegisterValues[r[2]] = (float)RegisterValues[r[1]];
+    // FPURegisterValues[r[2]] = (float)RegisterValues[r[1]];
+    FPURegisterValues[r[2]] = myitof(RegisterValues[r[1]]);
     if(Mode == 0){
         print_register<<"itof is executed with"<<FPURegisterValues[r[2]]<< endl;
     }
 }
 
 void MIPSSimulator::ftoi(){
-    int temp_a = (int)FPURegisterValues[r[1]];
-    float temp_b =  abs(FPURegisterValues[r[1]]-temp_a);
-    if(temp_b >= 0.5){
-        if(temp_a>0){temp_a += 1;}else{
-            temp_a -= 1;
-        }
-    }
-    RegisterValues[r[2]] = temp_a;
+    // int temp_a = (int)FPURegisterValues[r[1]];
+    // float temp_b =  abs(FPURegisterValues[r[1]]-temp_a);
+    // if(temp_b >= 0.5){
+    //     if(temp_a>0){temp_a += 1;}else{
+    //         temp_a -= 1;
+    //     }
+    // }
+    // RegisterValues[r[2]] = temp_a;
+    RegisterValues[r[2]]= myftoi(FPURegisterValues[r[1]]);
     if(Mode == 0){
         print_register<<"ftoi is executed with"<<RegisterValues[r[2]]<< endl;
     }
 }
 
 void MIPSSimulator::floor(){
-    if(FPURegisterValues[r[1]]>=0){
-        RegisterValues[r[2]] = (int)FPURegisterValues[r[1]];
-    }else{
-        RegisterValues[r[2]] = (int)FPURegisterValues[r[1]]-1;
-    }
+    // if(FPURegisterValues[r[1]]>=0){
+    //     RegisterValues[r[2]] = (int)FPURegisterValues[r[1]];
+    // }else{
+    //     RegisterValues[r[2]] = (int)FPURegisterValues[r[1]]-1;
+    // }
+    RegisterValues[r[2]] = myfloor(FPURegisterValues[r[1]]);
     if(Mode == 0){
         print_register<<"floor is executed with"<<RegisterValues[r[2]]<< endl;
     }
 }
 void MIPSSimulator::ceqs(){
-    if(FPURegisterValues[r[1]]==FPURegisterValues[r[0]]){
-        RegisterValues[r[2]]=1;
-    }else{
-        RegisterValues[r[2]]=0;
-    }
+    // if(FPURegisterValues[r[1]]==FPURegisterValues[r[0]]){
+    //     RegisterValues[r[2]]=1;
+    // }else{
+    //     RegisterValues[r[2]]=0;
+    // }
+    RegisterValues[r[2]] = myfeq(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
     if(Mode == 0){
         print_register<<"ceqs is executed"<<endl;
     }   
