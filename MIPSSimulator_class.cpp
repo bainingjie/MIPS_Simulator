@@ -24,9 +24,9 @@ class MIPSSimulator
         string Registers[32]; //array to store names of registers
         int32_t RegisterValues[32]; //array to store values of CPU registers
         float FPURegisterValues[32];//array to store values of FPU registers
-        int32_t Memory[1024*100];// memory
+        int32_t Memory[1024*1000];// memory
         int max_memory_index;
-        int32_t limit_of_exec;
+        long long int limit_of_exec;
         int32_t Mode; //to store the Mode of execution
         int Instruction_count [33];
         string Instructions [33];
@@ -121,7 +121,8 @@ MIPSSimulator::MIPSSimulator(int32_t mode, string fileName, int32_t num_input)
     string tempInstructions[]={"add","sub ","jr","slt","sll","srl","j","jal","beq","bne","addi","slti",
     "ori","lui","fadd","fsub","fmul","fdiv","fsqrt","floor","ftoi","itof","fless","ceqs","mtc1","lw","sw","lwc1","swc1","readf","readi","outc","outi"};
     if(mode == 1){
-        limit_of_exec = 429496720;
+        // limit_of_exec = 429496720;
+        limit_of_exec = 10000000000;
         Mode = 1;
     }else{
         limit_of_exec = num_input;
@@ -591,7 +592,7 @@ void MIPSSimulator::itof(){
 
 void MIPSSimulator::ftoi(){
     int temp_a = (int)FPURegisterValues[r[1]];
-    int temp_b =  abs(FPURegisterValues[r[1]]-temp_a);
+    float temp_b =  abs(FPURegisterValues[r[1]]-temp_a);
     if(temp_b >= 0.5){
         if(temp_a>0){temp_a += 1;}else{
             temp_a -= 1;
