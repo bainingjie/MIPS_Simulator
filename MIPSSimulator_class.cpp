@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include "fpu_imitate.h"
+#include <chrono>
 
 using namespace std;
 
@@ -822,12 +823,52 @@ void MIPSSimulator::ParseInstruction(){
         // print_register<<"Parse Error: Invalid instruction"<<endl;
     }
 
-    Instruction_op = stoi(current_instruction.substr(0,6).c_str(), nullptr, 2);
-    Instruction_funct = stoi(current_instruction.substr(26,6).c_str(), nullptr, 2);
+    Instruction_op = stoi(current_instruction.substr(0,6), nullptr, 2);
+    Instruction_funct = stoi(current_instruction.substr(26,6), nullptr, 2);
     // I-type
-    if(Instruction_op == 8 || Instruction_op == 5 || Instruction_op == 35 || Instruction_op == 43||Instruction_op == 4 ||Instruction_op == 10 ||Instruction_op == 15 ||Instruction_op == 13||Instruction_op == 49 || Instruction_op == 57){
-        r[0] = stoi(current_instruction.substr(6,5).c_str(), nullptr, 2);
-        r[1] = stoi(current_instruction.substr(11,5).c_str(), nullptr, 2);
+    // if(Instruction_op == 8 || Instruction_op == 5 || Instruction_op == 35 || Instruction_op == 43||Instruction_op == 4 ||Instruction_op == 10 ||Instruction_op == 15 ||Instruction_op == 13||Instruction_op == 49 || Instruction_op == 57){
+    //     r[0] = stoi(current_instruction.substr(6,5), nullptr, 2);
+    //     r[1] = stoi(current_instruction.substr(11,5), nullptr, 2);
+
+    //     if(current_instruction[16] == '1'){
+    //         char temp_imm[17];
+    //         strcpy(temp_imm,current_instruction.substr(16,16));
+    //         for (int i = 0; i<16; i++){
+    //             if(temp_imm[i]=='1'){temp_imm[i]='0';}
+    //             else{temp_imm[i]='1';}
+    //         }
+    //         r[2] = stoi(temp_imm, nullptr, 2);
+    //         r[2] ++;
+    //         r[2] = 0-r[2];
+    //     }else{
+    //         r[2] = stoi(current_instruction.substr(16,16), nullptr, 2);
+    //     }
+    // }
+    // R-type                       outi
+    if(Instruction_op == 0 || (Instruction_op <= 63 && Instruction_op >= 60) ){
+        r[0] = stoi(current_instruction.substr(6,5), nullptr, 2);
+        r[1] = stoi(current_instruction.substr(11,5), nullptr, 2);
+        r[2] = stoi(current_instruction.substr(16,5), nullptr, 2);
+         /* store shamt*/
+        r[3] = stoi(current_instruction.substr(21,5), nullptr, 2);
+    // J-type
+    }else if (Instruction_op == 2 ||Instruction_op == 3){
+        r[0] = stoi(current_instruction.substr(6,26), nullptr, 2);
+    // FPU(f=s)
+    }else if (Instruction_op == 17){
+        // save fs to r[1]
+        r[1] = stoi(current_instruction.substr(6,5), nullptr, 2);
+        // save ft to r[0]
+        r[0] = stoi(current_instruction.substr(11,5), nullptr, 2);
+        // save fd to r[2]
+        r[2] = stoi(current_instruction.substr(16,5), nullptr, 2);
+        /* store the second filed */
+        r[3] = stoi(current_instruction.substr(21,5), nullptr, 2);
+
+    // I-type
+    }else{
+        r[0] = stoi(current_instruction.substr(6,5), nullptr, 2);
+        r[1] = stoi(current_instruction.substr(11,5), nullptr, 2);
 
         if(current_instruction[16] == '1'){
             char temp_imm[17];
@@ -840,36 +881,16 @@ void MIPSSimulator::ParseInstruction(){
             r[2] ++;
             r[2] = 0-r[2];
         }else{
-            r[2] = stoi(current_instruction.substr(16,16).c_str(), nullptr, 2);
+            r[2] = stoi(current_instruction.substr(16,16), nullptr, 2);
         }
     }
-    // R-type                       outi
-    else if(Instruction_op == 0 || Instruction_op == 63 || Instruction_op == 62 || Instruction_op == 61 || Instruction_op == 60){
-        r[0] = stoi(current_instruction.substr(6,5).c_str(), nullptr, 2);
-        r[1] = stoi(current_instruction.substr(11,5).c_str(), nullptr, 2);
-        r[2] = stoi(current_instruction.substr(16,5).c_str(), nullptr, 2);
-         /* store shamt*/
-        r[3] = stoi(current_instruction.substr(21,5).c_str(), nullptr, 2);
-    // J-type
-    }else if (Instruction_op == 2 ||Instruction_op == 3){
-        r[0] = stoi(current_instruction.substr(6,26).c_str(), nullptr, 2);
-    // FPU(f=s)
-    }else if (Instruction_op == 17){
-        // save fs to r[1]
-        r[1] = stoi(current_instruction.substr(6,5).c_str(), nullptr, 2);
-        // save ft to r[0]
-        r[0] = stoi(current_instruction.substr(11,5).c_str(), nullptr, 2);
-        // save fd to r[2]
-        r[2] = stoi(current_instruction.substr(16,5).c_str(), nullptr, 2);
-        /* store the second filed */
-        r[3] = stoi(current_instruction.substr(21,5).c_str(), nullptr, 2);
-
-    }else{
-        //cout<<"Parese Error: Invalid Instruction_op"<<endl;
-        // print_register<<"Parese Error: Invalid Instruction_op"<<endl;
-        // ReportError();
-    }
+    // else{
+    //     //cout<<"Parese Error: Invalid Instruction_op"<<endl;
+    //     // print_register<<"Parese Error: Invalid Instruction_op"<<endl;
+    //     // ReportError();
+    // }
 }
+
 
 //function to run the simulator
 void MIPSSimulator::Execute()
@@ -908,9 +929,34 @@ void MIPSSimulator::Execute()
           cout<<Instruction_op<<endl;
         }
         */
-        ReadInstruction(ProgramCounter/4); //set current_instruction
+        // auto start = chrono::steady_clock::now();
+        // ReadInstruction(ProgramCounter/4); //set current_instruction
+        // auto end = chrono::steady_clock::now();
+        // cout << "Elapsed time in read  : "
+        // << chrono::duration_cast<chrono::nanoseconds>(end - start).count()
+        // << " ns" << endl;
+
+        // start = chrono::steady_clock::now();
+        // ParseInstruction(); // return op , populate values in r[]
+        // end = chrono::steady_clock::now();
+        // cout << "Elapsed time in parse  : "
+        // << chrono::duration_cast<chrono::nanoseconds>(end - start).count()
+        // << " ns" << endl;
+
+        // start = chrono::steady_clock::now();
+        // ExecuteInstruction(); //call appropriate operation function based on the op and increment program counter
+        // end = chrono::steady_clock::now();
+        // cout << "Elapsed time in execute  : "
+        // << chrono::duration_cast<chrono::nanoseconds>(end - start).count()
+        // << " ns" << endl;
+
+
+    
+        ReadInstruction(ProgramCounter/4);
         ParseInstruction(); // return op , populate values in r[]
         ExecuteInstruction(); //call appropriate operation function based on the op and increment program counter
+
+
         /*
         if (count_exec > 11533800 && count_exec < 11534000) {
           cout << count_exec << endl;
