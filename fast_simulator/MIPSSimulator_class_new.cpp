@@ -777,16 +777,20 @@ int main()
 
     cout<<endl<<"MIPS Simulator - team7"<<endl<<endl;
     cout<<"入力形式： [binary file path] ＋ [実行行数]"<<endl;
-    cout<<"入力例：  ./sample_binary.txt  5  << "<<endl;
+    cout<<"入力例：  ./sample_binary.txt  5 "<<endl;
     cout<<"ただし、[実行行数]=0の場合は全ての命令を実行する。 "<<endl;
+    cout<<">> ";
     cin>>fileName>>num_input;
-    cout<<"Do you want to print registers by step? Enter 1 for yes, and 0 for no  <<"<<endl;
+    cout<<"Do you want to print registers by step? Enter 1 for yes, and 0 for no "<<endl;
+    cout<<">> ";
     cin >> Mode;
     Mode = 1-Mode;
-    cout<<"Do you have any input file? Enter 1 for yes, and 0 for no  << "<<endl;
+    cout<<"Do you have any input file? Enter 1 for yes, and 0 for no "<<endl;
+    cout<<">> ";
     cin >> inputFileCheck;
     if(inputFileCheck == 1){
         cout<<"Please enter the path of input file"<<endl;
+        cout<<">> ";
         cin>>fileName2;
         InputFile.open(fileName2.c_str(),ios::in);
         if(!InputFile)
