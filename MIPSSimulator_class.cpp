@@ -896,7 +896,7 @@ void MIPSSimulator::ParseInstruction(){
 void MIPSSimulator::Execute()
 {
     getchar(); //to remove effect of pressing enter key while starting
-    int count_exec=0;
+    long int count_exec=0;
 
     myfile.open ("print_output.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
     myfile2.open("result.ppm", std::fstream::in | std::fstream::out | std::fstream::trunc);
