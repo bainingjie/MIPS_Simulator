@@ -176,13 +176,15 @@ void jal()
 
 /* FPU */
 void fadd(){
-    FPURegisterValues[r[2]] =  FPURegisterValues[r[0]] + FPURegisterValues[r[1]];
+    // FPURegisterValues[r[2]] =  FPURegisterValues[r[0]] + FPURegisterValues[r[1]];
+    FPURegisterValues[r[2]] = myfadd(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
     if(Mode == 0){
         print_register<<"fadd is executed"<<endl;
     }
 }
 void fsub(){
-    FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] - FPURegisterValues[r[0]];
+    // FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] - FPURegisterValues[r[0]];
+    FPURegisterValues[r[2]] = myfsub(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
     if(Mode == 0){
         print_register<<"fsub is executed"<<endl;
     }
