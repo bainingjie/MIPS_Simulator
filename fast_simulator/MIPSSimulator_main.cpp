@@ -18,8 +18,43 @@ void init(){
     ProgramCounter=0;
     string tempRegisters[]={"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6",
     "t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","s8","ra"}; //names of registers
-    string tempInstructions[]={"add","sub ","jr","slt","sll","srl","j","jal","beq","bne","addi","slti",
-    "ori","lui","fadd","fsub","fmul","fdiv","fsqrt","floor","ftoi","itof","fless","ceqs","mtc1","lw","sw","lwc1","swc1","readf","readi","outc","outi"};
+    string tempInstructions[]={
+    "add",  //0
+    "sub ",
+    "jr",
+    "slt",
+    "sll",
+    "srl",
+    "j",
+    "jal",
+    "beq",
+    "bne",
+    "addi",
+    "slti",
+    "ori",
+    "lui",
+    "fadd",
+    "fsub",
+    "fmul",
+    "fdiv", //17
+    "fsqrt",
+    "floor",
+    "ftoi",
+    "itof",
+    "fless",
+    "ceqs",
+    "mtc1",
+    "lw",
+    "sw",
+    "lwc1",
+    "swc1",
+    "readf",
+    "readi",
+    "outc",
+    "outi",
+    "fori", //33
+    "flui" //34
+};
 
     if(num_input == 0){
         // limit_of_exec = 429496720;
@@ -33,7 +68,7 @@ void init(){
         Registers[i]=tempRegisters[i];
     }
 
-    for(int32_t i=0;i<33;i++)
+    for(int32_t i=0;i<=34;i++)
     {
         Instructions[i]=tempInstructions[i];
     }
@@ -131,6 +166,7 @@ void execute()
     print_register.open ("print_register.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
     // print_register2.open ("print_register2.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
     print_analysis.open("print_analysis.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+    print_lw.open("print_lw.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
     unsigned int sec;
     int nsec;
     double d_sec;
@@ -181,7 +217,7 @@ void execute()
     PrintRegister();
 
     /* print_analysis*/ 
-    for (int i = 0; i <= 32; i++){
+    for (int i = 0; i <= 34; i++){
             print_analysis<<Instructions[i]<<": "<<Instruction_count[i]<<endl;
     }
     print_analysis<<"maximum index of memory being used:"<< max_memory_index <<endl;
@@ -193,6 +229,7 @@ void execute()
     // myfile3.close();
     // print_pc.close();
     print_register.close();
+    print_lw.close();
     // print_register2.close();
     if(inputFileCheck == 1){
         InputFile.close();

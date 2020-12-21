@@ -34,14 +34,15 @@ int32_t NumberOfInstructions; //to store the number of lines in the program
 int max_memory_index;
 // long long count_outc;
 
-int Instruction_count [33];
-string Instructions [33];
+int Instruction_count [40];
+string Instructions [40];
 
 std::fstream myfile;
 std::fstream myfile2;
 std::fstream print_register;
 // std::fstream print_register2;
 std::fstream print_analysis;
+std::fstream print_lw;
 std::fstream InputFile;
 vector<inst_t> InputProgram3;
 

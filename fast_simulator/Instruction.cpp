@@ -132,6 +132,7 @@ void lw()
     if(Mode == 0){
         print_register<<endl<<"lw is executed with value: "<< (Memory[r[2]+RegisterValues[r[0]]]) <<" address:  "<<RegisterValues[r[1]]<<endl;
     }
+    // print_lw<< ProgramCounter <<"  ,  "<<  r[2]+RegisterValues[r[0]] <<"   ,  "<<RegisterValues[r[1]]<< endl;
     update_biggest(r[2]+RegisterValues[r[0]]);
 }
 
@@ -274,6 +275,28 @@ void mtc1(){
     // FPURegisterValues[r[1]]= int_to_binary_to_float(RegisterValues[r[0]]);
     if(Mode == 0){
         print_register<<"mtc1 is executed"<<endl;
+    }
+}
+
+// register not sure
+void fori(){
+    int temp_imm =  r[2] & 0b1111111111111111;
+    myfloat var;
+    var.f = FPURegisterValues[r[0]];
+    var.i = var.i | temp_imm;
+    FPURegisterValues[r[1]]=var.f;
+    if(Mode == 0){
+        print_register<<"fori is executed"<<endl;
+    }
+}
+
+void flui(){
+    myfloat var;
+    var.i = 0;
+    var.i = var.i| (r[2]<<16);
+    FPURegisterValues[r[1]] = var.f;
+    if(Mode == 0){
+        print_register<<"flui is executed"<<endl;
     }
 }
 

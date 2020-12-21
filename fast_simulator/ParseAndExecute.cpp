@@ -170,6 +170,18 @@ void ParseAndExecuteInstruction()
             ProgramCounter += 4;
             break;
 
+        case 29:
+            setItypeRegister();
+            fori();
+            ProgramCounter += 4;
+            Instruction_count[33]++;
+            break;
+        case 31:
+            setItypeRegister();
+            flui();
+            ProgramCounter += 4;
+            Instruction_count[34]++;
+            break;
         case 35:
             setItypeRegister();
             lw();
