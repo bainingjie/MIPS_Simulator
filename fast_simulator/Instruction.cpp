@@ -3,6 +3,7 @@ using namespace std;
 void update_biggest(int a){
     if(a> max_memory_index){
         max_memory_index = a;
+        // cout<<ProgramCounter<<","<<a <<"  ";
     }
 }
 
@@ -107,7 +108,7 @@ void slti()
 void bne()
 {
     if(RegisterValues[r[0]] != RegisterValues[r[1]]){
-        ProgramCounter += r[2]*4;
+        ProgramCounter += r[2];
     }
 
     if(Mode == 0){
@@ -118,7 +119,7 @@ void bne()
 void beq()
 {
     if(RegisterValues[r[0]] == RegisterValues[r[1]]){
-        ProgramCounter += r[2]*4;
+        ProgramCounter += r[2];
     }
 
     if(Mode == 0){
@@ -128,31 +129,38 @@ void beq()
 
 void lw()
 {
-    RegisterValues[r[1]]= Memory[r[2]+RegisterValues[r[0]]];
+    int temp_addr = r[2]+RegisterValues[r[0]];
+    update_biggest(temp_addr);
+    RegisterValues[r[1]]= Memory[temp_addr];
     if(Mode == 0){
-        print_register<<endl<<"lw is executed with value: "<< (Memory[r[2]+RegisterValues[r[0]]]) <<" address:  "<<RegisterValues[r[1]]<<endl;
+        print_register<<endl<<"lw is executed with value: "<< RegisterValues[r[1]] <<" address:  "<<temp_addr<<endl;
     }
+    Memory_record[temp_addr] += 1;
+    if(Memory_Value_record[temp_addr]!= RegisterValues[r[1]]){
+        Memory_Value_record[temp_addr] = RegisterValues[r[1]];
+        Memory_Change_record[temp_addr] += 1;
+    } 
     // print_lw<< ProgramCounter <<"  ,  "<<  r[2]+RegisterValues[r[0]] <<"   ,  "<<RegisterValues[r[1]]<< endl;
-    update_biggest(r[2]+RegisterValues[r[0]]);
+    
 }
 
 
 void sw()
 {
+    update_biggest(r[2]+RegisterValues[r[0]]);
     Memory[RegisterValues[r[0]]+r[2]] =  RegisterValues[r[1]];
     if(Mode == 0){
         print_register<<endl<<"sw is executed with value: "<<RegisterValues[r[1]]<<" address:  "<< RegisterValues[r[0]]+r[2]<<endl;
     }
-    update_biggest(r[2]+RegisterValues[r[0]]);
 
 }
 
 // J type
 void j()
 {
-    int32_t temp_a = ProgramCounter + 4;
+    int32_t temp_a = ProgramCounter + 1;
     temp_a = temp_a & 0b11110000000000000000000000000000;
-    int32_t temp_b = r[0]*4;
+    int32_t temp_b = r[0];
     ProgramCounter = temp_a|temp_b;
     if(Mode == 0){
         print_register<<"j is called"<<endl;
@@ -161,16 +169,17 @@ void j()
 
 void jal()
 {
-    RegisterValues[31] = ProgramCounter + 4;
+    RegisterValues[31] = ProgramCounter + 1;
 
-    int32_t temp_a = ProgramCounter + 4;
+    int32_t temp_a = ProgramCounter + 1;
     temp_a = temp_a & 0b11110000000000000000000000000000;
-    int32_t temp_b = r[0]*4;
+    // int32_t temp_b = r[0]*4;
+    int32_t temp_b = r[0];
     ProgramCounter = temp_a|temp_b;
-
-    if(Mode == 0){
-        print_register<<"jal is called"<<endl;
-    }
+    // Jal_record[ProgramCounter/4] += 1;
+    // if(Mode == 0){
+    //     print_register<<"jal is called"<<endl;
+    // }
 
 }
 
@@ -303,6 +312,7 @@ void flui(){
 }
 
 void lwc1(){
+    update_biggest(r[2]+RegisterValues[r[0]]);
     // FPURegisterValues[r[1]]= int_to_binary_to_float(Memory[r[2]+RegisterValues[r[0]]]);
     myfloat var;
     var.i = Memory[r[2]+RegisterValues[r[0]]];
@@ -310,17 +320,17 @@ void lwc1(){
     if(Mode == 0){
         print_register<<"lwc1 is executed with value: "<< FPURegisterValues[r[1]] <<"from address:  "<<r[2]+RegisterValues[r[0]]<<endl;
     }
-    update_biggest(r[2]+RegisterValues[r[0]]);
 }
 
 void swc1(){
+    update_biggest(r[2]+RegisterValues[r[0]]);
     myfloat var;
     var.f = FPURegisterValues[r[1]];
     Memory[RegisterValues[r[0]]+r[2]] = var.i ;
     if(Mode == 0){
         print_register<<"swc1 is executed with value: "<<FPURegisterValues[r[1]]<<" address:  "<< RegisterValues[r[0]]+r[2]<<endl;
     }
-    update_biggest(r[2]+RegisterValues[r[0]]);
+
 }
 
 void outi(){

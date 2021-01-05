@@ -79,10 +79,24 @@ void init(){
         FPURegisterValues[i] = 0.0;
     }
 
-    for(int32_t i=0;i<1024*4;i++)
+    for(int32_t i=0;i<1024*1000;i++)
     {
         Memory[i]=0;
     }
+
+
+    for(int32_t i=0;i<630000;i++)
+    {
+        Memory_record[i]=0;
+        Memory_Value_record[i]=0;
+        Memory_Change_record[i]=0;
+    }
+
+    for(int32_t i=0;i<11000;i++)
+    {
+        Jal_record[i]=0;
+    }
+
 
     for(int32_t i=0;i<33;i++)
     {
@@ -174,12 +188,13 @@ void execute()
     struct timespec start_time, end_time;
     clock_gettime(CLOCK_REALTIME, &start_time);
 
-    while(prev_pc!= ProgramCounter && ProgramCounter<NumberOfInstructions*4&& count_exec<limit_of_exec)
+    while(prev_pc!= ProgramCounter && ProgramCounter<NumberOfInstructions && count_exec<limit_of_exec)
     {
+        // cout<<ProgramCounter<<endl;
         prev_pc = ProgramCounter;
 
         // auto start = chrono::steady_clock::now();
-        ReadInstruction(ProgramCounter/4); //set current_instruction
+        ReadInstruction(ProgramCounter); //set current_instruction
         // auto end = chrono::steady_clock::now();
         // cout << "Elapsed time in read : "
         // << chrono::duration_cast<chrono::nanoseconds>(end - start).count()
@@ -194,14 +209,14 @@ void execute()
         // << " ns" << endl;
 
         if (count_exec%50000000==0 && count_exec != 0){
-          cout<<"current_count_exec:"<<count_exec<<endl;
+          cout<<"current_count_exec:"<<count_exec<<" PC: "<<ProgramCounter<<endl;
         }
 
         count_exec++;
 
         if(Mode == 0){
           print_register<<"count_exec:"<<count_exec<<endl;
-          PrintRegister();
+          // PrintRegister();
           print_register<<"***** PC after　execution: *****"<<ProgramCounter<<endl;
         }
     }
@@ -223,6 +238,23 @@ void execute()
     print_analysis<<"maximum index of memory being used:"<< max_memory_index <<endl;
 
 
+    for (int i = 0; i < 630000; i++){
+        if(Memory_record[i]!= 0){
+            print_analysis<<"Memory address: "<<i<<" lw count: "<<Memory_record[i]<< " change count: "<< Memory_Change_record[i]<< " last val: "<<Memory_Value_record[i]<<endl;
+        }
+    }
+
+    for (int i = 0; i <= 11000; i++){
+        if(Jal_record[i] != 0){
+            print_analysis<<"ProgramCounter: "<<i<<" jal count: "<<Jal_record[i]<<endl;
+        }
+    }
+
+    for (int i = 0; i <= 31; i++){
+            print_analysis<<"Register "<<i<<" count: "<<Register_record[i]<<endl;
+            print_analysis<<"FPU_Register "<<i<<" count: "<<FPU_Register_record[i]<<endl;
+    }
+
     myfile.close();
     myfile2.close();
     print_analysis.close();
@@ -234,7 +266,6 @@ void execute()
     if(inputFileCheck == 1){
         InputFile.close();
     }
-
 }
 
 

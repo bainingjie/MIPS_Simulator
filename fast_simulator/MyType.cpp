@@ -26,6 +26,15 @@ int32_t RegisterValues[32]; //array to store values of CPU registers
 float FPURegisterValues[32];//array to store values of FPU registers
 int32_t r[4]; //to store the id of operand or constant
 
+
+int Register_record[32];
+int FPU_Register_record[32];
+
+int Memory_record[630000];
+int Memory_Value_record[630000];
+int Memory_Change_record[630000];
+int Jal_record[11000];
+
 int32_t ProgramCounter;
 long long count_exec;
 long long int limit_of_exec;
