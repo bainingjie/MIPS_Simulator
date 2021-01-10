@@ -193,15 +193,6 @@ void init(){
     while(getline(InputFile,tempString))
     {
         NumberOfInstructions++;
-        //stoiが31文字までしか認識しなかったから少し面倒な書き方になっているけど要するにint型にしているだけ
-        // tempInt = stoi(tempString.substr(0,31), nullptr, 2);
-        // if (tempString[31] == '1'){
-        //   tempInt = tempInt*2 + 1;
-        // }
-        // else{
-        //   tempInt = tempInt*2;
-        // }
-
         tempInt = strtoull(tempString.substr(0,36).c_str(), nullptr, 2);
         //InputProgram2にpush
         tempInst.inst_36 = tempInt;
@@ -226,14 +217,12 @@ void PrintRegister()
         }
 
     }
+    for (int i = 64; i <= 127; i++){
+        if (FPURegisterValues[i] != 0.0){
+            print_register<<"$fi"<<(i-64)<<": "<<FPURegisterValues[i]<<"(" << std::hex << FPURegisterValues[i] << ")" << std::dec << " | ";
+        }
 
-    // print_register<<endl;
-    // print_register<<Registers[2]<<": "<<RegisterValues[2]<< " | ";
-    // print_register<<Registers[4]<<": "<<RegisterValues[4]<< " | ";
-    // print_register<<Registers[16]<<": "<<RegisterValues[16]<< " | ";
-    // print_register<<Registers[29]<<": "<<RegisterValues[29]<< " | ";
-    // print_register<<Registers[31]<<": "<<RegisterValues[31]<<" | ";
-
+    }
     // for (int i = 4070; i<=4096; i++){
     //     print_register<<"Memory"<<i<<"  :"<<Memory[i]<<endl;
     // }

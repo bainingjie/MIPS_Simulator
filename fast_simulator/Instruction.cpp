@@ -133,7 +133,7 @@ void bslt()
         ProgramCounter += r[2];
     }
     if(Mode == 0){
-        print_register<<"bslt is executed with "<<RegisterValues[r[0]] << " and "<<RegisterValues[r[1]] <<endl;
+        print_register<<"bslt is executed "<<endl;
     }
 }
 
@@ -153,25 +153,25 @@ void bfless(){
         ProgramCounter += r[2];
     }
     if(Mode == 0){
-        print_register<<"bfless is executed with: if " <<FPURegisterValues[r[1]]<<"< "<< FPURegisterValues[r[0]] <<endl;
+        print_register<<"bfless is executed " <<endl;
     }
 }
 
 void bflessi(){
-    if (myfless(FPURegisterValues[r[0]+32],FPURegisterValues[r[1]])){
+    if (myfless(FPURegisterValues[r[0]+64],FPURegisterValues[r[1]])){
         ProgramCounter += r[2];
     }
     if(Mode == 0){
-        print_register<<"bflessi is executed with: if " <<FPURegisterValues[r[1]]<<"< "<< FPURegisterValues[r[0]] <<endl;
+        print_register<<"bflessi is executed  "  <<endl;
     }
 }
 
 void bflessi2(){
-    if (myfless(FPURegisterValues[r[0]],FPURegisterValues[r[1]+32])){
+    if (myfless(FPURegisterValues[r[0]],FPURegisterValues[r[1]+64])){
         ProgramCounter += r[2];
     }
     if(Mode == 0){
-        print_register<<"bflessi2 is executed with: if " <<FPURegisterValues[r[1]]<<"< "<< FPURegisterValues[r[0]] <<endl;
+        print_register<<"bflessi2 is executed" <<endl;
     }
 }
 
@@ -180,7 +180,7 @@ void bfeq(){
         ProgramCounter += r[2];
     }
     if(Mode == 0){
-        print_register<<"bfeq is executed with: if " <<FPURegisterValues[r[1]]<<"< "<< FPURegisterValues[r[0]] <<endl;
+        print_register<<"bfeq is executed " <<endl;
     }
 }
 
@@ -355,7 +355,7 @@ void fori(){
     myfloat var;
     var.f = FPURegisterValues[r[0]];
     var.i = var.i | temp_imm;
-    FPURegisterValues[r[1]+32]=var.f;
+    FPURegisterValues[r[1]+64]=var.f;
     if(Mode == 0){
         print_register<<"fori is executed"<<endl;
     }
@@ -365,7 +365,7 @@ void flui(){
     myfloat var;
     var.i = 0;
     var.i = var.i| (r[2]<<16);
-    FPURegisterValues[r[1]+32] = var.f;
+    FPURegisterValues[r[1]+64] = var.f;
     if(Mode == 0){
         print_register<<"flui is executed"<<endl;
     }

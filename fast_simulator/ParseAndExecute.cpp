@@ -3,14 +3,9 @@ void setItypeRegister(){
         r[0] = current_instruction.itype.r0;
         r[1] = current_instruction.itype.r1;
         r[2] = current_instruction.itype.imm;
-        // if (r[2]>32768){ 
         if (r[2]>131072){ 
-            //65536=10000000000000000
-          // r[2] = -(65536-r[2]);
           r[2] = -(262144-r[2]);
         }
-        // Register_record[r[0]] += 1;
-        // Register_record[r[1]] += 1;
 }
 
 void setRtypeRegister(){
@@ -40,9 +35,9 @@ void setFtypeRegister(){
 
 void f_sub(){
     if(r[3]==17){
-        r[1] += 32;
+        r[1] += 64;
     }else if(r[3]==18){
-        r[0] += 32;
+        r[0] += 64;
     }else if (r[3]==4){
         mtc1();
         Instruction_count[24]++;
@@ -201,46 +196,6 @@ void ParseAndExecuteInstruction()
             break;
         case 17:
             setFtypeRegister();
-            // if (r[3]==16){
-            //     if(Instruction_funct == 0){
-            //         fadd();
-            //         Instruction_count[14]++;
-            //     }else if(Instruction_funct == 1){
-            //         fsub();
-            //         Instruction_count[15]++;
-            //     }else if(Instruction_funct == 2){
-            //         fmul();
-            //         Instruction_count[16]++;
-            //     }else if(Instruction_funct == 3){
-            //         fdiv();
-            //         Instruction_count[17]++;
-            //     }else if(Instruction_funct == 4){
-            //         fsqrt();
-            //         Instruction_count[18]++;
-            //     }else if(Instruction_funct == 5){
-            //         floor();
-            //         Instruction_count[19]++;
-            //     }else if(Instruction_funct == 6){
-            //         ftoi();
-            //         Instruction_count[20]++;
-            //     }else if(Instruction_funct == 7){
-            //         itof();
-            //         Instruction_count[21]++;
-            //     }else if(Instruction_funct == 60){
-            //         fless();
-            //         Instruction_count[22]++;
-            //     }else if(Instruction_funct == 50){
-            //         ceqs();
-            //         Instruction_count[23]++;
-            //     }
-            // }else if (r[3]==4){
-            //     mtc1();
-            //     Instruction_count[24]++;
-            // }else if (r[3] == 17){
-
-            // }else{
-            //     puts("Parse Error: fpu instruction not found");
-            // }
             f_sub();
             ProgramCounter += 1;
             break;
@@ -262,18 +217,18 @@ void ParseAndExecuteInstruction()
             setItypeRegister();
             bslt();
             ProgramCounter += 1;
-            // Instruction_count[8]++;
+            Instruction_count[35]++;
             break;
         case 33:
             setItypeRegister();
             bslti();
             ProgramCounter += 1;
-            // Instruction_count[8]++;
+            Instruction_count[36]++;
             break;
         case 34:
             setItypeRegister();
             bfless();
-            // Instruction_count[22]++;
+            Instruction_count[37]++;
             ProgramCounter += 1;
             break;
         case 35:
@@ -285,19 +240,19 @@ void ParseAndExecuteInstruction()
         case 36:
             setItypeRegister();
             bfeq();
-            // Instruction_count[22]++;
+            Instruction_count[38]++;
             ProgramCounter += 1;
             break;
         case 37:
             setItypeRegister();
             bflessi();
-            // Instruction_count[22]++;
+            Instruction_count[39]++;
             ProgramCounter += 1;
             break;
         case 38:
             setItypeRegister();
             bflessi2();
-            // Instruction_count[22]++;
+            Instruction_count[40]++;
             ProgramCounter += 1;
             break;
         case 43:
