@@ -70,7 +70,7 @@ void addi()
 {
     RegisterValues[r[1]]=RegisterValues[r[0]]+r[2];
     if(Mode == 0){
-        print_register<<"addi is executed"<<endl;
+        print_register<<"addi is executed with Reg "<<r[1]<<" <- Reg "<< r[0]<<" + "<<  r[2] <<endl;
     }
 }
 
@@ -118,12 +118,13 @@ void bne()
 
 void beq()
 {
+
     if(RegisterValues[r[0]] == RegisterValues[r[1]]){
         ProgramCounter += r[2];
     }
 
     if(Mode == 0){
-        print_register<<"beq is executed"<<endl;
+        print_register<<"beq is executed with "<<RegisterValues[r[0]] << " and "<<RegisterValues[r[1]] <<endl;
     }
 }
 
@@ -135,12 +136,13 @@ void lw()
     if(Mode == 0){
         print_register<<endl<<"lw is executed with value: "<< RegisterValues[r[1]] <<" address:  "<<temp_addr<<endl;
     }
-    Memory_record[temp_addr] += 1;
-    if(Memory_Value_record[temp_addr]!= RegisterValues[r[1]]){
-        Memory_Value_record[temp_addr] = RegisterValues[r[1]];
-        Memory_Change_record[temp_addr] += 1;
-    } 
-    // print_lw<< ProgramCounter <<"  ,  "<<  r[2]+RegisterValues[r[0]] <<"   ,  "<<RegisterValues[r[1]]<< endl;
+    // Memory_record[temp_addr] += 1;
+
+    // if(Memory_Value_record[temp_addr]!= RegisterValues[r[1]]){
+    //     Memory_Value_record[temp_addr] = RegisterValues[r[1]];
+    //     Memory_Change_record[temp_addr] += 1;
+    // } 
+
     
 }
 
@@ -163,7 +165,7 @@ void j()
     int32_t temp_b = r[0];
     ProgramCounter = temp_a|temp_b;
     if(Mode == 0){
-        print_register<<"j is called"<<endl;
+        print_register<<"j is called"  <<endl;
     }
 }
 
@@ -177,9 +179,9 @@ void jal()
     int32_t temp_b = r[0];
     ProgramCounter = temp_a|temp_b;
     // Jal_record[ProgramCounter/4] += 1;
-    // if(Mode == 0){
-    //     print_register<<"jal is called"<<endl;
-    // }
+    if(Mode == 0){
+        print_register<<"jal is called"<<endl;
+    }
 
 }
 

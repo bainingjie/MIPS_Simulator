@@ -1,16 +1,53 @@
 using namespace std;
+
+// typedef union inst_t {
+//     uint32_t inst_32;
+//     struct rtype {
+//         unsigned int r4: 6,r3: 5,r2 : 5,r1: 5,r0: 5,op:6;
+//     }rtype;
+//     struct itype
+//     {   
+//         unsigned int imm : 16,r1:5,r0: 5,op:6; // -> signed
+//     }itype;
+//     struct jtype
+//     {   
+//         unsigned int r0: 26,op:6;
+//     }jtype;
+// }inst_t;
+
+// typedef struct 
+// {
+//     uint64_t bits : 36;
+// }Int_36;
+
+// typedef union inst_t {
+//     Int_36 inst_36;
+//     struct rtype {
+//         unsigned int r4: 6,r3: 6,r2 : 6,r1: 6,r0: 6,op:6;
+//     }rtype;
+//     struct itype
+//     {   
+//         unsigned int imm : 18,r1:6,r0: 6,op:6; // -> signed
+//     }itype;
+//     struct jtype
+//     {   
+//         unsigned int r0: 30,op:6;
+//     }jtype;
+// }inst_t;
+
 typedef union inst_t {
-    uint32_t inst_32;
+    // Int_36 inst_36;
+    uint64_t inst_36;
     struct rtype {
-        unsigned int r4: 6,r3: 5,r2 : 5,r1: 5,r0: 5,op:6;
+        unsigned long long int r4: 6,r3: 6,r2 : 6,r1: 6,r0: 6,op:6,non:28;
     }rtype;
     struct itype
     {   
-        unsigned int imm : 16,r1:5,r0: 5,op:6; // -> signed
+        unsigned long long int imm : 18,r1:6,r0: 6,op:6,non:28; // -> signed
     }itype;
     struct jtype
     {   
-        unsigned int r0: 26,op:6;
+        unsigned long long int r0: 30,op:6,non:28;
     }jtype;
 }inst_t;
 
@@ -20,10 +57,10 @@ typedef union myfloat {
 } myfloat;
 
 
-int32_t Memory[1024*1000];// memory
-string Registers[32]; //array to store names of registers
-int32_t RegisterValues[32]; //array to store values of CPU registers
-float FPURegisterValues[32];//array to store values of FPU registers
+int32_t Memory[1024*10000];// memory
+string Registers[64]; //array to store names of registers
+int32_t RegisterValues[64]; //array to store values of CPU registers
+float FPURegisterValues[64];//array to store values of FPU registers
 int32_t r[4]; //to store the id of operand or constant
 
 

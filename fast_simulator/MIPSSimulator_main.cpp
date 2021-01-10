@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h> 
 #include <cmath>
 #include <cstring>
 #include <fstream>
@@ -16,8 +17,73 @@ void init(){
     NumberOfInstructions=0;
     count_exec = 0;
     ProgramCounter=0;
-    string tempRegisters[]={"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6",
-    "t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","s8","ra"}; //names of registers
+    string tempRegisters[]={
+    "zero", //0
+    "at",
+    "v0",
+    "v1",
+    "a0",//4
+    "a1",
+    "a2",
+    "a3",
+    "t0", //8
+    "t1",
+    "t2",
+    "t3",
+    "t4",
+    "t5",
+    "t6",
+    "t7",
+    "s0",//16
+    "s1",
+    "s2",//18
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "t8",
+    "t9",
+    "k0",
+    "k1",
+    "gp",
+    "sp",
+    "s8",
+    "ra",
+    "33",  
+    "34",  
+    "35",  
+    "36",  
+    "37",  
+    "38",  
+    "39",  
+    "40",  
+    "41",  
+    "42",  
+    "43",  
+    "44",  
+    "45",  
+    "46",  
+    "47",  
+    "48",  
+    "49",  
+    "50",  
+    "51",  
+    "52",  
+    "53",  
+    "54",  
+    "55",  
+    "56",  
+    "57",  
+    "58",  
+    "59",  
+    "60",  
+    "61",  
+    "62",  
+    "63",
+    "64"
+    }; //names of registers
+
     string tempInstructions[]={
     "add",  //0
     "sub ",
@@ -63,7 +129,7 @@ void init(){
         limit_of_exec = num_input;
     }
 
-    for(int32_t i=0;i<32;i++)
+    for(int32_t i=0;i<64;i++)
     {
         Registers[i]=tempRegisters[i];
     }
@@ -73,13 +139,13 @@ void init(){
         Instructions[i]=tempInstructions[i];
     }
 
-    for(int32_t i=0;i<32;i++)
+    for(int32_t i=0;i<64;i++)
     {
         RegisterValues[i]=0;
         FPURegisterValues[i] = 0.0;
     }
 
-    for(int32_t i=0;i<1024*1000;i++)
+    for(int32_t i=0;i<1024*10000;i++)
     {
         Memory[i]=0;
     }
@@ -113,36 +179,39 @@ void init(){
     }
  
     string tempString;
-    unsigned int tempInt;
+    unsigned long long int tempInt;
     inst_t tempInst;
+    
     while(getline(InputFile,tempString))
     {
         NumberOfInstructions++;
         //stoiが31文字までしか認識しなかったから少し面倒な書き方になっているけど要するにint型にしているだけ
-        tempInt = stoi(tempString.substr(0,31), nullptr, 2);
-        //cout << tempString[31] << endl;
-        if (tempString[31] == '1'){
-          tempInt = tempInt*2 + 1;
-        }
-        else{
-          tempInt = tempInt*2;
-        }
+        // tempInt = stoi(tempString.substr(0,31), nullptr, 2);
+        // if (tempString[31] == '1'){
+        //   tempInt = tempInt*2 + 1;
+        // }
+        // else{
+        //   tempInt = tempInt*2;
+        // }
+
+        tempInt = strtoull(tempString.substr(0,36).c_str(), nullptr, 2);
         //InputProgram2にpush
-        tempInst.inst_32 = tempInt;
+        tempInst.inst_36 = tempInt;
         InputProgram3.push_back(tempInst);
     }
     InputFile.close();
+
 }
 
 void PrintRegister()
 {
     print_register<<"begin"<<endl;
-    for (int i = 0; i <= 31; i++){
+    for (int i = 0; i <= 63; i++){
         if(RegisterValues[i] != 0){
             print_register<<Registers[i]<<": "<<RegisterValues[i]<<"(" << std::hex << RegisterValues[i] << ")" << std::dec << " | ";
         }
     }
-    for (int i = 0; i <= 31; i++){
+    for (int i = 0; i <= 63; i++){
         if (FPURegisterValues[i] != 0.0){
             print_register<<"$f"<<i<<": "<<FPURegisterValues[i]<<"(" << std::hex << FPURegisterValues[i] << ")" << std::dec << " | ";
         }
@@ -172,7 +241,7 @@ void ReadInstruction(int32_t program_counter)
 void execute()
 {
     getchar(); //to remove effect of pressing enter key while starting
-    long long prev_pc;
+    long long prev_pc = -1;
     myfile.open ("print_output.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
     myfile2.open("result.ppm", std::fstream::in | std::fstream::out | std::fstream::trunc);
     // print_pc.open ("print_pc.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
@@ -190,6 +259,7 @@ void execute()
 
     while(prev_pc!= ProgramCounter && ProgramCounter<NumberOfInstructions && count_exec<limit_of_exec)
     {
+
         // cout<<ProgramCounter<<endl;
         prev_pc = ProgramCounter;
 
@@ -216,7 +286,7 @@ void execute()
 
         if(Mode == 0){
           print_register<<"count_exec:"<<count_exec<<endl;
-          // PrintRegister();
+          PrintRegister();
           print_register<<"***** PC after　execution: *****"<<ProgramCounter<<endl;
         }
     }

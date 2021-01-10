@@ -3,13 +3,14 @@ void setItypeRegister(){
         r[0] = current_instruction.itype.r0;
         r[1] = current_instruction.itype.r1;
         r[2] = current_instruction.itype.imm;
-        if (r[2]>32768){ 
+        // if (r[2]>32768){ 
+        if (r[2]>131072){ 
             //65536=10000000000000000
-          r[2] = -(65536-r[2]);
+          // r[2] = -(65536-r[2]);
+          r[2] = -(262144-r[2]);
         }
         Register_record[r[0]] += 1;
         Register_record[r[1]] += 1;
-
 }
 
 void setRtypeRegister(){
@@ -42,7 +43,7 @@ void ParseAndExecuteInstruction()
     Instruction_op = current_instruction.rtype.op;
     Instruction_funct = current_instruction.rtype.r4;
     // cout<<"op: "<<Instruction_op<<endl;
-    // cout<<"r0: "<<current_instruction.rtype.r0<<endl;
+    // cout<<"r0: "<<current_instruction.jtype.r0<<endl;
     // cout<<"r1: "<<current_instruction.rtype.r1<<endl;
     // cout<<"r2: "<<current_instruction.rtype.r2<<endl;
     // cout<<"r3: "<<current_instruction.rtype.r3<<endl;
