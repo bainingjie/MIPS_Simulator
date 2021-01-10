@@ -118,13 +118,69 @@ void bne()
 
 void beq()
 {
-
     if(RegisterValues[r[0]] == RegisterValues[r[1]]){
         ProgramCounter += r[2];
     }
 
     if(Mode == 0){
         print_register<<"beq is executed with "<<RegisterValues[r[0]] << " and "<<RegisterValues[r[1]] <<endl;
+    }
+}
+
+void bslt()
+{
+    if(RegisterValues[r[0]] < RegisterValues[r[1]]){
+        ProgramCounter += r[2];
+    }
+    if(Mode == 0){
+        print_register<<"bslt is executed with "<<RegisterValues[r[0]] << " and "<<RegisterValues[r[1]] <<endl;
+    }
+}
+
+// I-type
+void bslti()
+{
+    if (RegisterValues[r[0]]<r[1]){
+        ProgramCounter += r[2];
+    }
+    if(Mode == 0){
+        print_register<<"bslti is executed"<<endl;
+    }
+}
+
+void bfless(){
+    if (myfless(FPURegisterValues[r[0]],FPURegisterValues[r[1]])){
+        ProgramCounter += r[2];
+    }
+    if(Mode == 0){
+        print_register<<"bfless is executed with: if " <<FPURegisterValues[r[1]]<<"< "<< FPURegisterValues[r[0]] <<endl;
+    }
+}
+
+void bflessi(){
+    if (myfless(FPURegisterValues[r[0]+32],FPURegisterValues[r[1]])){
+        ProgramCounter += r[2];
+    }
+    if(Mode == 0){
+        print_register<<"bflessi is executed with: if " <<FPURegisterValues[r[1]]<<"< "<< FPURegisterValues[r[0]] <<endl;
+    }
+}
+
+void bflessi2(){
+    if (myfless(FPURegisterValues[r[0]],FPURegisterValues[r[1]+32])){
+        ProgramCounter += r[2];
+    }
+    if(Mode == 0){
+        print_register<<"bflessi2 is executed with: if " <<FPURegisterValues[r[1]]<<"< "<< FPURegisterValues[r[0]] <<endl;
+    }
+}
+
+void bfeq(){
+    if (myfeq(FPURegisterValues[r[1]],FPURegisterValues[r[0]])){
+        ProgramCounter += r[2];
+    }
+    if(Mode == 0){
+        print_register<<"bfeq is executed with: if " <<FPURegisterValues[r[1]]<<"< "<< FPURegisterValues[r[0]] <<endl;
     }
 }
 
@@ -234,6 +290,8 @@ void fless(){
     }
 }
 
+
+
 void itof(){
     // FPURegisterValues[r[2]] = (float)RegisterValues[r[1]];
     FPURegisterValues[r[2]] = myitof(RegisterValues[r[1]]);
@@ -297,7 +355,7 @@ void fori(){
     myfloat var;
     var.f = FPURegisterValues[r[0]];
     var.i = var.i | temp_imm;
-    FPURegisterValues[r[1]]=var.f;
+    FPURegisterValues[r[1]+32]=var.f;
     if(Mode == 0){
         print_register<<"fori is executed"<<endl;
     }
@@ -307,7 +365,7 @@ void flui(){
     myfloat var;
     var.i = 0;
     var.i = var.i| (r[2]<<16);
-    FPURegisterValues[r[1]] = var.f;
+    FPURegisterValues[r[1]+32] = var.f;
     if(Mode == 0){
         print_register<<"flui is executed"<<endl;
     }

@@ -1,49 +1,14 @@
 using namespace std;
 
-// typedef union inst_t {
-//     uint32_t inst_32;
-//     struct rtype {
-//         unsigned int r4: 6,r3: 5,r2 : 5,r1: 5,r0: 5,op:6;
-//     }rtype;
-//     struct itype
-//     {   
-//         unsigned int imm : 16,r1:5,r0: 5,op:6; // -> signed
-//     }itype;
-//     struct jtype
-//     {   
-//         unsigned int r0: 26,op:6;
-//     }jtype;
-// }inst_t;
-
-// typedef struct 
-// {
-//     uint64_t bits : 36;
-// }Int_36;
-
-// typedef union inst_t {
-//     Int_36 inst_36;
-//     struct rtype {
-//         unsigned int r4: 6,r3: 6,r2 : 6,r1: 6,r0: 6,op:6;
-//     }rtype;
-//     struct itype
-//     {   
-//         unsigned int imm : 18,r1:6,r0: 6,op:6; // -> signed
-//     }itype;
-//     struct jtype
-//     {   
-//         unsigned int r0: 30,op:6;
-//     }jtype;
-// }inst_t;
-
 typedef union inst_t {
-    // Int_36 inst_36;
     uint64_t inst_36;
     struct rtype {
+
         unsigned long long int r4: 6,r3: 6,r2 : 6,r1: 6,r0: 6,op:6,non:28;
     }rtype;
     struct itype
     {   
-        unsigned long long int imm : 18,r1:6,r0: 6,op:6,non:28; // -> signed
+        unsigned long long int imm : 18,r1:6,r0: 6,op:6,non:28;
     }itype;
     struct jtype
     {   
@@ -58,14 +23,16 @@ typedef union myfloat {
 
 
 int32_t Memory[1024*10000];// memory
+
 string Registers[64]; //array to store names of registers
 int32_t RegisterValues[64]; //array to store values of CPU registers
-float FPURegisterValues[64];//array to store values of FPU registers
+float FPURegisterValues[128];//array to store values of FPU registers
+// float FPUImmediateValues[64];//array to store values of FPU Immediate registers
 int32_t r[4]; //to store the id of operand or constant
 
 
-int Register_record[32];
-int FPU_Register_record[32];
+// int Register_record[32];
+// int FPU_Register_record[32];
 
 int Memory_record[630000];
 int Memory_Value_record[630000];

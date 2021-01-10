@@ -119,7 +119,13 @@ void init(){
     "outc",
     "outi",
     "fori", //33
-    "flui" //34
+    "flui", //34
+    "bslt",
+    "bslti",
+    "bfless",
+    "bfeq",
+    "bflessi",
+    "bflessi2" //40
 };
 
     if(num_input == 0){
@@ -134,7 +140,7 @@ void init(){
         Registers[i]=tempRegisters[i];
     }
 
-    for(int32_t i=0;i<=34;i++)
+    for(int32_t i=0;i<=40;i++)
     {
         Instructions[i]=tempInstructions[i];
     }
@@ -302,7 +308,7 @@ void execute()
     PrintRegister();
 
     /* print_analysis*/ 
-    for (int i = 0; i <= 34; i++){
+    for (int i = 0; i <= 40; i++){
             print_analysis<<Instructions[i]<<": "<<Instruction_count[i]<<endl;
     }
     print_analysis<<"maximum index of memory being used:"<< max_memory_index <<endl;
@@ -320,10 +326,10 @@ void execute()
         }
     }
 
-    for (int i = 0; i <= 31; i++){
-            print_analysis<<"Register "<<i<<" count: "<<Register_record[i]<<endl;
-            print_analysis<<"FPU_Register "<<i<<" count: "<<FPU_Register_record[i]<<endl;
-    }
+    // for (int i = 0; i <= 31; i++){
+    //         print_analysis<<"Register "<<i<<" count: "<<Register_record[i]<<endl;
+    //         print_analysis<<"FPU_Register "<<i<<" count: "<<FPU_Register_record[i]<<endl;
+    // }
 
     myfile.close();
     myfile2.close();
