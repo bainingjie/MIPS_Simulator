@@ -47,8 +47,9 @@ int32_t NumberOfInstructions; //to store the number of lines in the program
 int max_memory_index;
 // long long count_outc;
 
-int Instruction_count [40];
-string Instructions [40];
+const int INSTRUCTION_NUM = 41;
+int Instruction_count [INSTRUCTION_NUM];
+string Instructions [INSTRUCTION_NUM];
 
 std::fstream myfile;
 std::fstream myfile2;

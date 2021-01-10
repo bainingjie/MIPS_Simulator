@@ -129,7 +129,6 @@ void init(){
 };
 
     if(num_input == 0){
-        // limit_of_exec = 429496720;
         limit_of_exec = 10000000000;
     }else{
         limit_of_exec = num_input;
@@ -140,7 +139,7 @@ void init(){
         Registers[i]=tempRegisters[i];
     }
 
-    for(int32_t i=0;i<=40;i++)
+    for(int32_t i=0;i<INSTRUCTION_NUM;i++)
     {
         Instructions[i]=tempInstructions[i];
     }
@@ -148,6 +147,9 @@ void init(){
     for(int32_t i=0;i<64;i++)
     {
         RegisterValues[i]=0;
+    }
+    for(int32_t i=0;i<128;i++)
+    {
         FPURegisterValues[i] = 0.0;
     }
 
@@ -170,7 +172,7 @@ void init(){
     }
 
 
-    for(int32_t i=0;i<33;i++)
+    for(int32_t i=0;i<INSTRUCTION_NUM;i++)
     {
         Instruction_count[i]=0;
     }
@@ -206,6 +208,7 @@ void init(){
         InputProgram3.push_back(tempInst);
     }
     InputFile.close();
+
 
 }
 
@@ -246,26 +249,31 @@ void ReadInstruction(int32_t program_counter)
 
 void execute()
 {
+
     getchar(); //to remove effect of pressing enter key while starting
     long long prev_pc = -1;
+
+
     myfile.open ("print_output.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+
     myfile2.open("result.ppm", std::fstream::in | std::fstream::out | std::fstream::trunc);
-    // print_pc.open ("print_pc.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+    // // print_pc.open ("print_pc.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
 
     print_register.open ("print_register.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
-    // print_register2.open ("print_register2.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
-    print_analysis.open("print_analysis.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
-    print_lw.open("print_lw.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+    // // print_register2.open ("print_register2.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+    // puts("8");
+    // print_analysis.open("print_analysis.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+    // print_lw.open("print_lw.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+
     unsigned int sec;
     int nsec;
     double d_sec;
 
     struct timespec start_time, end_time;
     clock_gettime(CLOCK_REALTIME, &start_time);
-
+    
     while(prev_pc!= ProgramCounter && ProgramCounter<NumberOfInstructions && count_exec<limit_of_exec)
     {
-
         // cout<<ProgramCounter<<endl;
         prev_pc = ProgramCounter;
 
@@ -308,23 +316,23 @@ void execute()
     PrintRegister();
 
     /* print_analysis*/ 
-    for (int i = 0; i <= 40; i++){
-            print_analysis<<Instructions[i]<<": "<<Instruction_count[i]<<endl;
-    }
-    print_analysis<<"maximum index of memory being used:"<< max_memory_index <<endl;
+    // for (int i = 0; i <= 40; i++){
+    //         print_analysis<<Instructions[i]<<": "<<Instruction_count[i]<<endl;
+    // }
+    // print_analysis<<"maximum index of memory being used:"<< max_memory_index <<endl;
 
 
-    for (int i = 0; i < 630000; i++){
-        if(Memory_record[i]!= 0){
-            print_analysis<<"Memory address: "<<i<<" lw count: "<<Memory_record[i]<< " change count: "<< Memory_Change_record[i]<< " last val: "<<Memory_Value_record[i]<<endl;
-        }
-    }
+    // for (int i = 0; i < 630000; i++){
+    //     if(Memory_record[i]!= 0){
+    //         print_analysis<<"Memory address: "<<i<<" lw count: "<<Memory_record[i]<< " change count: "<< Memory_Change_record[i]<< " last val: "<<Memory_Value_record[i]<<endl;
+    //     }
+    // }
 
-    for (int i = 0; i <= 11000; i++){
-        if(Jal_record[i] != 0){
-            print_analysis<<"ProgramCounter: "<<i<<" jal count: "<<Jal_record[i]<<endl;
-        }
-    }
+    // for (int i = 0; i <= 11000; i++){
+    //     if(Jal_record[i] != 0){
+    //         print_analysis<<"ProgramCounter: "<<i<<" jal count: "<<Jal_record[i]<<endl;
+    //     }
+    // }
 
     // for (int i = 0; i <= 31; i++){
     //         print_analysis<<"Register "<<i<<" count: "<<Register_record[i]<<endl;
@@ -333,11 +341,12 @@ void execute()
 
     myfile.close();
     myfile2.close();
-    print_analysis.close();
-    // myfile3.close();
-    // print_pc.close();
+    // print_analysis.close();
+    // // myfile3.close();
+    // // print_pc.close();
     print_register.close();
-    print_lw.close();
+    // print_lw.close();
+
     // print_register2.close();
     if(inputFileCheck == 1){
         InputFile.close();
