@@ -241,34 +241,84 @@ void jal()
 
 }
 
+
 /* FPU */
 void fadd(){
-    // FPURegisterValues[r[2]] =  FPURegisterValues[r[0]] + FPURegisterValues[r[1]];
-    FPURegisterValues[r[2]] = myfadd(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
-    if(Mode == 0){
-        print_register<<"fadd is executed"<<endl;
-    }
+    // if(r[3]==16){
+        FPURegisterValues[r[2]] = myfadd(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
+        if(Mode == 0){
+            print_register<<"fadd is executed　with $f" <<r[1]<<"and $f"<<r[0]<<endl;
+        }
+    // }else if(r[3]==17){
+    //     FPURegisterValues[r[2]] = myfadd(FPURegisterValues[r[1]+64],FPURegisterValues[r[0]]);
+    //     if(Mode == 0){
+    //         print_register<<"fadd with imm_1 is executed with $fi"<<r[1]<<"and $f"<<r[0]<<endl;
+    //     }
+    // }else if(r[3]==18){
+    //     FPURegisterValues[r[2]] = myfadd(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
+    //     if(Mode == 0){
+    //         print_register<<"fadd with imm_2 is executed with $f"<<r[1]<<"and $fi"<<r[0]<<endl;
+    //     }
+    // }
 }
 void fsub(){
-    // FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] - FPURegisterValues[r[0]];
-    FPURegisterValues[r[2]] = myfsub(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
-    if(Mode == 0){
-        print_register<<"fsub is executed"<<endl;
-    }
+
+    // if(r[3]==16){
+        FPURegisterValues[r[2]] = myfsub(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
+        if(Mode == 0){
+            print_register<<"fsub is executed"<<endl;
+        }
+    // }else if(r[3]==17){
+    //     FPURegisterValues[r[2]] = myfsub(FPURegisterValues[r[1]+64],FPURegisterValues[r[0]]);
+    //     if(Mode == 0){
+    //         print_register<<"fsub with imm_1 is executed"<<endl;
+    //     }
+    // }else if(r[3]==18){
+    //     FPURegisterValues[r[2]] = myfsub(FPURegisterValues[r[1]],FPURegisterValues[r[0]+64]);
+    //     if(Mode == 0){
+    //         print_register<<"fsub with imm_2 is executed"<<endl;
+    //     }
+    // }
+    // if(Mode == 0){
+    //     print_register<<"fsub is executed"<<endl;
+    // }
 }
 void fmul(){
-    // FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] * FPURegisterValues[r[0]];
-    FPURegisterValues[r[2]] = myfmul(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
-    if(Mode == 0){
-        print_register<<"fmul is executed"<<endl;
-    }
+    // if(r[3]==16){
+        FPURegisterValues[r[2]] = myfmul(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
+        if(Mode == 0){
+            print_register<<"fmul is executed"<<endl;
+        }
+    // }else if(r[3]==17){
+    //     FPURegisterValues[r[2]] = myfmul(FPURegisterValues[r[1]+64],FPURegisterValues[r[0]]);
+    //     if(Mode == 0){
+    //         print_register<<"fmul with imm_1 is executed"<<endl;
+    //     }
+    // }else if(r[3]==18){
+    //     FPURegisterValues[r[2]] = myfmul(FPURegisterValues[r[1]],FPURegisterValues[r[0]+64]);
+    //     if(Mode == 0){
+    //         print_register<<"fmul with imm_2 is executed"<<endl;
+    //     }
+    // }
+
 }
 void fdiv(){
-    // FPURegisterValues[r[2]] =  FPURegisterValues[r[1]] / FPURegisterValues[r[0]];
-    FPURegisterValues[r[2]] = myfdiv(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
-    if(Mode == 0){
-        print_register<<"fdiv is executed"<<endl;
-    }
+    // if(r[3]==16){
+        FPURegisterValues[r[2]] = myfdiv(FPURegisterValues[r[1]],FPURegisterValues[r[0]]);
+        if(Mode == 0){
+            print_register<<"fdiv is executed"<<endl;
+        }
+    // }else if(r[3]==17){
+    //     FPURegisterValues[r[2]] = myfdiv(FPURegisterValues[r[1]+64],FPURegisterValues[r[0]]);
+    //     if(Mode == 0){
+    //         print_register<<"fdiv with imm_1 is executed"<<endl;
+    //     }
+    // }else if(r[3]==18){
+    //     FPURegisterValues[r[2]] = myfdiv(FPURegisterValues[r[1]],FPURegisterValues[r[0]+64]);
+    //     if(Mode == 0){
+    //         print_register<<"fdiv with imm_2 is executed"<<endl;
+    //     }
+    // }
 }
 void fsqrt(){
     // FPURegisterValues[r[2]] =  sqrt(FPURegisterValues[r[1]]);
@@ -353,7 +403,7 @@ void mtc1(){
 void fori(){
     int temp_imm =  r[2] & 0b1111111111111111;
     myfloat var;
-    var.f = FPURegisterValues[r[0]];
+    var.f = FPURegisterValues[r[0]+64];
     var.i = var.i | temp_imm;
     FPURegisterValues[r[1]+64]=var.f;
     if(Mode == 0){
